@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>logo.png</file>
+        <file>icon.ico</file>
+        <file>qqmusic.png</file>
+        <file>video.png</file>
+        <file>radio.png</file>
+        <file>QQ.png</file>
+        <file>heart.png</file>
+        <file>computer.png</file>
+        <file>history.png</file>
+        <file>LTL.png</file>
+        <file>trolley.png</file>
+    </qresource>
+</RCC>
