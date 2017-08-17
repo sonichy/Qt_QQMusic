@@ -19,7 +19,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">QListWidget { background: #EFF5F6; margin: 0 20px; }
-QListWidget::item { padding: 1px 5px;}
+QListWidget::item { padding: 5px 5px;}
 QListWidget::item:selected { background: #30C27C; }
 QTableWidget::item:selected { background: #30C27C; }
 QSlider::sub-page:Horizontal { background-color: #30C27C; }
@@ -167,8 +167,14 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
            <property name="frameShadow">
             <enum>QFrame::Plain</enum>
            </property>
+           <property name="iconSize">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="spacing">
-            <number>5</number>
+            <number>0</number>
            </property>
           </widget>
          </item>
@@ -190,13 +196,13 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>150</height>
+             <height>160</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>150</height>
+             <height>160</height>
             </size>
            </property>
            <property name="frameShape">
@@ -204,6 +210,15 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Plain</enum>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="spacing">
+            <number>0</number>
            </property>
           </widget>
          </item>
@@ -637,6 +652,9 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
   <action name="action_directory">
    <property name="text">
     <string>下载文件夹</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
  </widget>
