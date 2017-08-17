@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+    ui->setupUi(this);    
     ui->pushButton_skipb->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
     ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     ui->pushButton_skipf->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->lineEdit_search,SIGNAL(returnPressed()),this,SLOT(initSearch()));
     connect(ui->lineEdit_page,SIGNAL(returnPressed()),this,SLOT(search()));
     ui->tableWidget->setColumnHidden(2,true);
+    ui->tableWidget->setColumnHidden(3,true);
     ui->tableWidget->setColumnWidth(0,ui->tableWidget->width());
     connect(ui->tableWidget,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(playSong(int,int)));
     player = new QMediaPlayer;
@@ -72,7 +73,7 @@ void MainWindow::on_action_about_triggered()
 {
     QDialog *dialog=new QDialog;
     dialog->setWindowTitle("关于");
-    dialog->setFixedSize(420,340);
+    dialog->setFixedSize(400,340);
     QVBoxLayout *vbox=new QVBoxLayout;
     QHBoxLayout *hbox=new QHBoxLayout;
     QLabel *label=new QLabel;
@@ -84,7 +85,7 @@ void MainWindow::on_action_about_triggered()
     QFont font;
     font.setPointSize(12);
     label->setFont(font);
-    label->setText("    一款基于Qt的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考:\nUI：QQ音乐\nAPI：https://github.com/deepins/qq-music-api");
+    label->setText("        一款基于Qt的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考:\nUI：QQ音乐\nAPI：https://github.com/deepins/qq-music-api");
     label->setWordWrap(true);
     label->setAlignment(Qt::AlignTop);
     vbox->addWidget(label);
@@ -130,16 +131,9 @@ void MainWindow::search()
             ui->tableWidget->setItem(i,0,new QTableWidgetItem(list[i].toObject().value("songname").toString()));
             ui->tableWidget->setItem(i,1,new QTableWidgetItem(list[i].toObject().value("singer").toArray()[0].toObject().value("name").toString()));
             ui->tableWidget->setItem(i,2,new QTableWidgetItem("http://dl.stream.qqmusic.qq.com/M500" + list[i].toObject().value("songmid").toString() + ".mp3?vkey=" + key + "&guid=85880580&fromtag=30"));
+            ui->tableWidget->setItem(i,3,new QTableWidgetItem(list[i].toObject().value("albummid").toString()));
         }
-        ui->tableWidget->resizeColumnsToContents();
-        QString singerPic = json.object().value("data").toObject().value("zhida").toObject().value("zhida_singer").toObject().value("singerPic").toString();
-        request.setUrl(singerPic);
-        reply = NAM->get(request);
-        connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-        loop.exec();
-        QPixmap pixmap;
-        pixmap.loadFromData(reply->readAll());
-        ui->label_cover->setPixmap(pixmap.scaled(70,70));
+        ui->tableWidget->resizeColumnsToContents();        
     }
 }
 
@@ -171,7 +165,16 @@ void MainWindow::playSong(int r,int c)
     player->setMedia(QUrl(surl));
     player->play();
     ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-    ui->slider_progress->setMaximum(player->duration());
+    ui->slider_progress->setMaximum(player->duration());    
+    QString album_cover_small = QString("https://y.gtimg.cn/music/photo_new/T002R150x150M000%1.jpg").arg(ui->tableWidget->item(r,3)->text());
+    QNetworkRequest request(album_cover_small);
+    QNetworkReply *reply = NAM->get(request);
+    QEventLoop loop;
+    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    loop.exec();
+    QPixmap pixmap;
+    pixmap.loadFromData(reply->readAll());
+    ui->label_cover->setPixmap(pixmap.scaled(70,70));
 }
 
 void MainWindow::on_pushButton_play_clicked()

@@ -477,7 +477,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
            <bool>false</bool>
           </property>
           <property name="columnCount">
-           <number>3</number>
+           <number>4</number>
           </property>
           <attribute name="horizontalHeaderVisible">
            <bool>false</bool>
@@ -485,6 +485,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
           <attribute name="verticalHeaderVisible">
            <bool>false</bool>
           </attribute>
+          <column/>
           <column/>
           <column/>
           <column/>
@@ -581,6 +582,9 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
               <width>30</width>
               <height>30</height>
              </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true"/>
             </property>
             <property name="text">
              <string>↓</string>
