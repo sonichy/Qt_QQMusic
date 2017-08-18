@@ -20,10 +20,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);    
-    ui->pushButton_skipb->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
+    ui->setupUi(this);
+    ui->pushButton_skipb->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-    ui->pushButton_skipf->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
+    ui->pushButton_skipf->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
     ui->pushButton_pageLast->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
     ui->pushButton_pageNext->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
     ui->lineEdit_page->setValidator(new QIntValidator(1,50));
@@ -73,19 +73,17 @@ void MainWindow::on_action_about_triggered()
 {
     QDialog *dialog=new QDialog;
     dialog->setWindowTitle("关于");
-    dialog->setFixedSize(400,340);
+    dialog->setFixedSize(500,340);
     QVBoxLayout *vbox=new QVBoxLayout;
-    QHBoxLayout *hbox=new QHBoxLayout;
     QLabel *label=new QLabel;
     label->setPixmap(QPixmap("logo.png"));
-    hbox->addWidget(label);
-    vbox->addLayout(hbox);
-    //vbox->addWidget(label);
+    label->setAlignment(Qt::AlignCenter);
+    vbox->addWidget(label);
     label=new QLabel;
     QFont font;
     font.setPointSize(12);
     label->setFont(font);
-    label->setText("        一款基于Qt的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考:\nUI：QQ音乐\nAPI：https://github.com/deepins/qq-music-api");
+    label->setText("         一款基于Qt的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考:\nUI：QQ音乐\nAPI：https://github.com/deepins/qq-music-api");
     label->setWordWrap(true);
     label->setAlignment(Qt::AlignTop);
     vbox->addWidget(label);
@@ -119,15 +117,12 @@ void MainWindow::search()
         loop.exec();
         QJsonDocument json;        
         QJsonArray list;
-        QByteArray responseText = reply->readAll();
-        //qDebug() <<  responseText;
+        QByteArray responseText = reply->readAll();        
         json = QJsonDocument::fromJson(responseText);
-        list = json.object().value("data").toObject().value("song").toObject().value("list").toArray();
-        //qDebug() << list;
+        list = json.object().value("data").toObject().value("song").toObject().value("list").toArray();        
         ui->tableWidget->setRowCount(0);
         for(int i=0;i<list.size();i++){
             ui->tableWidget->insertRow(i);
-            //qDebug() << list[i].toObject().value("songname").toString();
             ui->tableWidget->setItem(i,0,new QTableWidgetItem(list[i].toObject().value("songname").toString()));
             ui->tableWidget->setItem(i,1,new QTableWidgetItem(list[i].toObject().value("singer").toArray()[0].toObject().value("name").toString()));
             ui->tableWidget->setItem(i,2,new QTableWidgetItem("http://dl.stream.qqmusic.qq.com/M500" + list[i].toObject().value("songmid").toString() + ".mp3?vkey=" + key + "&guid=85880580&fromtag=30"));
@@ -159,6 +154,7 @@ void MainWindow::getKey()
 
 void MainWindow::playSong(int r,int c)
 {
+    ui->pushButton_download->setStyleSheet("");
     ui->label_SongSinger->setText(ui->tableWidget->item(r,0)->text() + " - " + ui->tableWidget->item(r,1)->text());
     QString surl=ui->tableWidget->item(r,2)->text();
     qDebug() << surl;
@@ -215,7 +211,6 @@ void MainWindow::positionChange(qint64 p)
 void MainWindow::durationChange(qint64 d)
 {
     ui->slider_progress->setMaximum(d);
-    //qDebug() << "player->duration()=" << player->duration() << d;
 }
 
 void MainWindow::setMPPosition()
@@ -247,31 +242,39 @@ void MainWindow::stateChange(QMediaPlayer::State state)
 
 void MainWindow::on_pushButton_download_clicked()
 {
-    QString surl = ui->tableWidget->item(ui->tableWidget->currentRow(),2)->text();
-    qDebug() <<  "download -> " + surl;
-    QUrl url = QString(surl);
-    QNetworkRequest request(url);
-    QNetworkReply *reply = NAM->get(request);
-    QEventLoop loop;
-    connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(updateProgress(qint64,qint64)));
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
-
-    QString filename = ui->tableWidget->item(ui->tableWidget->currentRow(),0)->text() + " - " + ui->tableWidget->item(ui->tableWidget->currentRow(),1)->text() + "." + QFileInfo(surl).suffix().left(QFileInfo(surl).suffix().indexOf("?"));
-    QString filepath = downloadDir + "/" + filename;
-    qDebug() <<  "path -> " + filepath;
-    QFile file(filepath);
-    file.open(QIODevice::WriteOnly);
-    file.write(reply->readAll());
-    file.close();
-    ui->pushButton_download->setText("↓");
-    ui->pushButton_download->setEnabled(true);
+    if(ui->tableWidget->currentRow() != -1){
+        ui->pushButton_download->setEnabled(false);
+        QString surl = ui->tableWidget->item(ui->tableWidget->currentRow(),2)->text();
+        //qDebug() <<  "download -> " + surl;
+        QUrl url = QString(surl);
+        QNetworkRequest request(url);
+        QNetworkReply *reply = NAM->get(request);
+        QEventLoop loop;
+        connect(reply,SIGNAL(downloadProgress(qint64,qint64)),this,SLOT(updateProgress(qint64,qint64)));
+        connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+        loop.exec();
+        QString filename = ui->tableWidget->item(ui->tableWidget->currentRow(),0)->text() + " - " + ui->tableWidget->item(ui->tableWidget->currentRow(),1)->text() + "." + QFileInfo(surl).suffix().left(QFileInfo(surl).suffix().indexOf("?"));
+        QString filepath = downloadDir + "/" + filename;
+        //qDebug() <<  "path -> " + filepath;
+        QFile file(filepath);
+        file.open(QIODevice::WriteOnly);
+        file.write(reply->readAll());
+        file.close();
+        //ui->pushButton_download->setText("↓");
+        ui->pushButton_download->setEnabled(true);
+    }
 }
 
 void MainWindow::updateProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-    ui->pushButton_download->setEnabled(false);
-    ui->pushButton_download->setText(QString("%1%").arg(bytesReceived*100/bytesTotal));
+    //ui->pushButton_download->setText(QString("%1%").arg(bytesReceived*100/bytesTotal));
+    float p=(float)bytesReceived/bytesTotal;
+    ui->pushButton_download->setStyleSheet(QString("background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0,"
+                                                   "stop:0 rgba(48, 194, 124, 255), stop:%1 rgba(48, 194, 124, 255),"
+                                                   "stop:%2 rgba(255, 255, 255, 255), stop:1 rgba(255, 255, 255, 255));")
+                                      .arg(p-0.001)
+                                      .arg(p));
+    //qDebug() << p <<ui->pushButton_download->styleSheet();
 }
 
 void MainWindow::on_pushButton_pageLast_clicked()

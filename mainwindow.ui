@@ -125,7 +125,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="pushButton_login">
            <property name="text">
             <string>登录</string>
            </property>
@@ -143,7 +143,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
             <string>在线音乐</string>
            </property>
            <property name="margin">
-            <number>15</number>
+            <number>14</number>
            </property>
           </widget>
          </item>
@@ -152,13 +152,13 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
            <property name="minimumSize">
             <size>
              <width>0</width>
-             <height>120</height>
+             <height>100</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>120</height>
+             <height>100</height>
             </size>
            </property>
            <property name="frameShape">
@@ -187,7 +187,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
             <string>我的音乐</string>
            </property>
            <property name="margin">
-            <number>15</number>
+            <number>14</number>
            </property>
           </widget>
          </item>
@@ -588,21 +588,25 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
            <widget class="QPushButton" name="pushButton_download">
             <property name="minimumSize">
              <size>
-              <width>30</width>
-              <height>30</height>
+              <width>40</width>
+              <height>40</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>30</width>
-              <height>30</height>
+              <width>40</width>
+              <height>40</height>
              </size>
             </property>
             <property name="styleSheet">
              <string notr="true"/>
             </property>
             <property name="text">
-             <string>↓</string>
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="res.qrc">
+              <normaloff>:/download.png</normaloff>:/download.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -659,6 +663,22 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>lineEdit_search</tabstop>
+  <tabstop>pushButton_pageNext</tabstop>
+  <tabstop>pushButton_pageLast</tabstop>
+  <tabstop>lineEdit_page</tabstop>
+  <tabstop>pushButton_skipb</tabstop>
+  <tabstop>pushButton_play</tabstop>
+  <tabstop>pushButton_skipf</tabstop>
+  <tabstop>pushButton_avantar</tabstop>
+  <tabstop>listWidget_online</tabstop>
+  <tabstop>listWidget_mine</tabstop>
+  <tabstop>pushButton_login</tabstop>
+  <tabstop>tableWidget</tabstop>
+  <tabstop>slider_progress</tabstop>
+  <tabstop>pushButton_download</tabstop>
+ </tabstops>
  <resources>
   <include location="res.qrc"/>
  </resources>
