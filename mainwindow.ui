@@ -104,6 +104,9 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
                <height>70</height>
               </size>
              </property>
+             <property name="focusPolicy">
+              <enum>Qt::NoFocus</enum>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -126,6 +129,9 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_login">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>登录</string>
            </property>
@@ -276,6 +282,9 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
                 <height>50</height>
                </size>
               </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string/>
               </property>
@@ -304,6 +313,9 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
                 <height>50</height>
                </size>
               </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
               <property name="text">
                <string/>
               </property>
@@ -331,6 +343,9 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
                 <width>50</width>
                 <height>50</height>
                </size>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
               </property>
               <property name="text">
                <string/>
@@ -364,7 +379,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
          <number>5</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <layout class="QHBoxLayout" name="horizontalLayout_right_top">
           <property name="spacing">
            <number>0</number>
           </property>
@@ -410,6 +425,9 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
               <width>30</width>
               <height>16777215</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="text">
              <string/>
@@ -461,6 +479,9 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
               <height>16777215</height>
              </size>
             </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -492,7 +513,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
            <bool>false</bool>
           </property>
           <property name="columnCount">
-           <number>4</number>
+           <number>5</number>
           </property>
           <attribute name="horizontalHeaderVisible">
            <bool>false</bool>
@@ -504,10 +525,14 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
           <column/>
           <column/>
           <column/>
+          <column/>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <widget class="QTextBrowser" name="textBrowser"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_right_bottom">
           <property name="spacing">
            <number>6</number>
           </property>
@@ -597,6 +622,9 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
               <width>40</width>
               <height>40</height>
              </size>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
             </property>
             <property name="styleSheet">
              <string notr="true"/>

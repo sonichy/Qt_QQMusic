@@ -15,6 +15,7 @@
 #include <QStandardPaths>
 #include <QFileInfo>
 #include <QDesktopServices>
+#include <QTextCodec>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -32,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->lineEdit_page,SIGNAL(returnPressed()),this,SLOT(search()));
     ui->tableWidget->setColumnHidden(2,true);
     ui->tableWidget->setColumnHidden(3,true);
+    ui->tableWidget->setColumnHidden(4,true);
     ui->tableWidget->setColumnWidth(0,ui->tableWidget->width());
     connect(ui->tableWidget,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(playSong(int,int)));
     player = new QMediaPlayer;
@@ -127,6 +129,7 @@ void MainWindow::search()
             ui->tableWidget->setItem(i,1,new QTableWidgetItem(list[i].toObject().value("singer").toArray()[0].toObject().value("name").toString()));
             ui->tableWidget->setItem(i,2,new QTableWidgetItem("http://dl.stream.qqmusic.qq.com/M500" + list[i].toObject().value("songmid").toString() + ".mp3?vkey=" + key + "&guid=85880580&fromtag=30"));
             ui->tableWidget->setItem(i,3,new QTableWidgetItem(list[i].toObject().value("albummid").toString()));
+            ui->tableWidget->setItem(i,4,new QTableWidgetItem("http://music.qq.com/miniportal/static/lyric/" + QString::number(list[i].toObject().value("songid").toInt()%100)+ "/" + QString::number(list[i].toObject().value("songid").toInt()) + ".xml"));
         }
         ui->tableWidget->resizeColumnsToContents();        
     }
@@ -171,6 +174,17 @@ void MainWindow::playSong(int r,int c)
     QPixmap pixmap;
     pixmap.loadFromData(reply->readAll());
     ui->label_cover->setPixmap(pixmap.scaled(70,70));
+    qDebug() << "歌词" << ui->tableWidget->item(r,4)->text();
+    request.setUrl(QUrl(ui->tableWidget->item(r,4)->text()));
+    reply = NAM->get(request);
+    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    loop.exec();
+    QByteArray BAReply = reply->readAll();
+    if(BAReply.indexOf("GB2312")==-1){
+        ui->textBrowser->setText(BAReply);
+    }else{
+        ui->textBrowser->setText(QTextCodec::codecForName("GBK")->toUnicode(BAReply));
+    }
 }
 
 void MainWindow::on_pushButton_play_clicked()
