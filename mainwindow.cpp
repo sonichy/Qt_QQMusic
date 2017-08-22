@@ -64,6 +64,26 @@ MainWindow::MainWindow(QWidget *parent) :
     downloadDir = QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first();
     NAM = new QNetworkAccessManager;
     getKey();
+
+    QDialog *DesktopLyric = new QDialog;
+    DesktopLyric->setWindowTitle("歌词");
+    DesktopLyric->setFixedSize(600,80);
+    DesktopLyric->move((QApplication::desktop()->width()-DesktopLyric->width())/2, y() + height() + 30);
+    DesktopLyric->setAttribute(Qt::WA_TranslucentBackground,true);
+    DesktopLyric->setWindowFlags(Qt::WindowStaysOnTopHint);
+    QVBoxLayout *vbox = new QVBoxLayout;
+    label_lyric = new QLabel;
+    QFont font;
+    font.setPointSize(25);
+    font.setBold(true);
+    label_lyric->setFont(font);
+    QPalette plt;
+    plt.setColor(QPalette::WindowText,Qt::blue);
+    label_lyric->setPalette(plt);
+    label_lyric->setText("QQ音乐，听你想听的音乐～");
+    vbox->addWidget(label_lyric);
+    DesktopLyric->setLayout(vbox);
+    DesktopLyric->show();
 }
 
 MainWindow::~MainWindow()
@@ -75,7 +95,7 @@ void MainWindow::on_action_about_triggered()
 {
     QDialog *dialog=new QDialog;
     dialog->setWindowTitle("关于");
-    dialog->setFixedSize(500,340);
+    dialog->setFixedSize(500,350);
     QVBoxLayout *vbox=new QVBoxLayout;
     QLabel *label=new QLabel;
     label->setPixmap(QPixmap("logo.png"));
@@ -85,7 +105,7 @@ void MainWindow::on_action_about_triggered()
     QFont font;
     font.setPointSize(12);
     label->setFont(font);
-    label->setText("         一款基于Qt的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考:\nUI：QQ音乐\nAPI：https://github.com/deepins/qq-music-api");
+    label->setText("QQ音乐 V2.0\n         一款基于Qt的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考:\nUI：QQ音乐\nAPI：https://github.com/deepins/qq-music-api");
     label->setWordWrap(true);
     label->setAlignment(Qt::AlignTop);
     vbox->addWidget(label);
@@ -183,7 +203,20 @@ void MainWindow::playSong(int r,int c)
     if(BAReply.indexOf("GB2312")==-1){
         ui->textBrowser->setText(BAReply);
     }else{
-        ui->textBrowser->setText(QTextCodec::codecForName("GBK")->toUnicode(BAReply));
+        QString lrc = QTextCodec::codecForName("GBK")->toUnicode(BAReply);
+        lrc = lrc.mid(lrc.indexOf("<![CDATA[")+9, lrc.indexOf("]]>")-lrc.indexOf("<![CDATA[")-9);
+        ui->textBrowser->setText(lrc);
+        QStringList line=lrc.split("\n");
+        lyrics.clear();
+        for(int i=0;i<line.size();i++){
+            if(line.at(i).contains("]") && !line.at(i).contains("ti:") && !line.at(i).contains("ar:") && !line.at(i).contains("al:") && !line.at(i).contains("by:") && !line.at(i).contains("offset:")){
+                QStringList strlist=line.at(i).split("]");
+                Lyric lyric;
+                lyric.time = QTime::fromString(strlist.at(0).mid(1,8)+"0","mm:ss.zzz");
+                lyric.sentence = strlist.at(1);
+                lyrics.append(lyric);
+            }
+        }        
     }
 }
 
@@ -220,6 +253,17 @@ void MainWindow::on_pushButton_skipb_clicked()
 void MainWindow::positionChange(qint64 p)
 {
     ui->slider_progress->setValue(p);
+    // 歌词选行
+    QTime t(0,0,0);
+    t=t.addMSecs(p);
+    for(int i=0;i<lyrics.size()-1;i++){
+        //qDebug() << t << lyrics.at(i).time;
+        if(t>lyrics.at(i).time && t<lyrics.at(i+1).time){
+            ui->label_lyric->setText(lyrics.at(i).sentence);
+            label_lyric->setText(lyrics.at(i).sentence);
+            break;
+        }
+    }
 }
 
 void MainWindow::durationChange(qint64 d)

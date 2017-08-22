@@ -5,6 +5,7 @@
 #include <QNetworkAccessManager>
 #include <QMediaPlayer>
 #include <QStandardItemModel>
+#include <QLabel>
 
 namespace Ui {
 class MainWindow;
@@ -25,6 +26,12 @@ private:
     void getKey();
     QMediaPlayer *player;
     int page;
+    struct Lyric{
+        QTime time;
+        QString sentence;
+    };
+    QList<Lyric> lyrics;
+    QLabel *label_lyric;
 
 private slots:
     void on_action_directory_triggered();

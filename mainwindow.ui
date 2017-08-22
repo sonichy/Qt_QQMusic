@@ -561,7 +561,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
              <number>0</number>
             </property>
             <property name="bottomMargin">
-             <number>20</number>
+             <number>0</number>
             </property>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -604,6 +604,13 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_lyric">
+              <property name="text">
+               <string/>
               </property>
              </widget>
             </item>
