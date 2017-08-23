@@ -6,6 +6,8 @@
 #include <QMediaPlayer>
 #include <QStandardItemModel>
 #include <QLabel>
+#include "form.h"
+#include "ui_form.h"
 
 namespace Ui {
 class MainWindow;
@@ -32,16 +34,18 @@ private:
     };
     QList<Lyric> lyrics;
     QLabel *label_lyric;
+    Form *DesktopLyric;
 
 private slots:
     void on_action_directory_triggered();
     void on_action_about_triggered();
+    void on_pushButton_pageLast_clicked();
+    void on_pushButton_pageNext_clicked();
     void on_pushButton_play_clicked();
     void on_pushButton_skipf_clicked();
     void on_pushButton_skipb_clicked();
+    void on_pushButton_lyric_clicked();
     void on_pushButton_download_clicked();
-    void on_pushButton_pageLast_clicked();
-    void on_pushButton_pageNext_clicked();
     void initSearch();
     void search();
     void playSong(int,int);
@@ -51,6 +55,7 @@ private slots:
     void setMPPosition();
     void stateChange(QMediaPlayer::State);
     void updateProgress(qint64, qint64);
+
 };
 
 #endif // MAINWINDOW_H

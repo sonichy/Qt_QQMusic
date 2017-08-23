@@ -617,17 +617,53 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
            </layout>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_download">
+           <widget class="QPushButton" name="pushButton_lyric">
             <property name="minimumSize">
              <size>
-              <width>40</width>
-              <height>40</height>
+              <width>30</width>
+              <height>30</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>40</width>
-              <height>40</height>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>14</pointsize>
+             </font>
+            </property>
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="text">
+             <string>词</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_download">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
              </size>
             </property>
             <property name="focusPolicy">
@@ -650,7 +686,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
              </size>
             </property>
             <property name="flat">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
            </widget>
           </item>
