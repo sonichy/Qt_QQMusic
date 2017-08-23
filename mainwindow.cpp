@@ -285,13 +285,14 @@ void MainWindow::setSTime(int v)
 
 void MainWindow::stateChange(QMediaPlayer::State state)
 {
-    qDebug() << state;
-//    if(state == QMediaPlayer::StoppedState){
+    qDebug() << state;   
+    if(state == QMediaPlayer::StoppedState){
+        ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
 //        if(ui->tableWidget->currentRow() < ui->tableWidget->rowCount()-1){
 //            ui->tableWidget->setCurrentCell(ui->tableWidget->currentRow()+1,0);
 //            playSong(ui->tableWidget->currentRow(),0);
 //        }
-//    }
+    }
 }
 
 void MainWindow::on_pushButton_download_clicked()

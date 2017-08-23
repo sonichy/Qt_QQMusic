@@ -30,6 +30,9 @@
      <property name="text">
       <string>QQ音乐，听你想听的音乐～</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
     </widget>
    </item>
   </layout>

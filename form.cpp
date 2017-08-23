@@ -1,6 +1,7 @@
 #include "form.h"
 #include "ui_form.h"
 #include <QMouseEvent>
+#include <QDebug>
 
 Form::Form(QWidget *parent) :
     QWidget(parent),
@@ -37,4 +38,16 @@ void Form::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
     m_bPressed = false;
+}
+
+void Form::enterEvent(QEvent *event)
+{
+    Q_UNUSED(event);
+    ui->label_lyric->setStyleSheet("border:1px solid gray;");
+}
+
+void Form::leaveEvent(QEvent *event)
+{
+    Q_UNUSED(event);
+    ui->label_lyric->setStyleSheet("");
 }
