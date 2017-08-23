@@ -712,6 +712,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
      <string>帮助</string>
     </property>
     <addaction name="action_directory"/>
+    <addaction name="action_settings"/>
     <addaction name="action_about"/>
    </widget>
    <addaction name="menu"/>
@@ -730,6 +731,14 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="action_settings">
+   <property name="text">
+    <string>设置</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+S</string>
    </property>
   </action>
  </widget>

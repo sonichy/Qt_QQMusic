@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
 #include <QDesktopWidget>
 #include <QDialog>
 #include <QLabel>
@@ -17,6 +16,8 @@
 #include <QFileInfo>
 #include <QDesktopServices>
 #include <QTextCodec>
+#include <QFontDialog>
+#include <QColorDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -76,6 +77,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::on_action_directory_triggered()
+{
+    QDesktopServices::openUrl(QUrl::fromLocalFile(downloadDir));
+}
+
 void MainWindow::on_action_about_triggered()
 {
     QDialog *dialog=new QDialog;
@@ -90,7 +96,7 @@ void MainWindow::on_action_about_triggered()
     QFont font;
     font.setPointSize(12);
     label->setFont(font);
-    label->setText("QQ音乐 V2.0");
+    label->setText("QQ音乐 V2.1");
     label->setAlignment(Qt::AlignCenter);
     vbox->addWidget(label);
     label=new QLabel;    
@@ -102,11 +108,6 @@ void MainWindow::on_action_about_triggered()
     vbox->addWidget(label);
     dialog->setLayout(vbox);
     dialog->show();
-}
-
-void MainWindow::on_action_directory_triggered()
-{
-    QDesktopServices::openUrl(QUrl::fromLocalFile(downloadDir));
 }
 
 void MainWindow::initSearch()
@@ -354,4 +355,51 @@ void MainWindow::on_pushButton_lyric_clicked()
     }else{
         DesktopLyric->hide();
     }
+}
+
+void MainWindow::on_action_settings_triggered()
+{
+    QDialog *dialog=new QDialog;
+    dialog->setWindowTitle("设置");
+    dialog->setFixedSize(500,400);
+    QVBoxLayout *vbox = new QVBoxLayout;
+    QHBoxLayout *hbox = new QHBoxLayout;
+    QLabel *label = new QLabel("歌词");
+    hbox->addWidget(label);
+    QPushButton *pushButton_font = new QPushButton;
+    //pushButton_font->setAlignment(Qt::AlignCenter);
+    pushButton_font->setText(DesktopLyric->ui->label_lyric->font().family() + "," + QString::number(DesktopLyric->ui->label_lyric->font().pointSize()));
+    connect(pushButton_font,SIGNAL(pressed()),this,SLOT(chooseFont()));
+    hbox->addWidget(pushButton_font);
+    pushButton_fontcolor = new QPushButton;
+    pushButton_fontcolor->setText("■");
+    QPalette plt = DesktopLyric->ui->label_lyric->palette();
+    QBrush brush = plt.color(QPalette::WindowText);
+    plt.setColor(QPalette::ButtonText, brush.color());
+    pushButton_fontcolor->setPalette(plt);
+    connect(pushButton_fontcolor,SIGNAL(pressed()),this,SLOT(chooseFontColor()));
+    hbox->addWidget(pushButton_fontcolor);
+    vbox->addLayout(hbox);
+    dialog->setLayout(vbox);
+    dialog->show();
+}
+
+void MainWindow::chooseFont()
+{
+    bool ok;
+    QFont font = QFontDialog::getFont(&ok, DesktopLyric->ui->label_lyric->font(), this, "选择字体");
+    if(ok){
+       DesktopLyric->ui->label_lyric->setFont(font);
+    }
+}
+
+void MainWindow::chooseFontColor()
+{
+    QPalette plt = DesktopLyric->ui->label_lyric->palette();
+    QBrush brush = plt.color(QPalette::WindowText);
+    QColor color = QColorDialog::getColor(brush.color(), this);
+    plt.setColor(QPalette::WindowText, color);
+    DesktopLyric->ui->label_lyric->setPalette(plt);
+    plt.setColor(QPalette::ButtonText, color);
+    pushButton_fontcolor->setPalette(plt);
 }

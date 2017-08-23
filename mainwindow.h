@@ -1,13 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "form.h"
+#include "ui_form.h"
 #include <QMainWindow>
 #include <QNetworkAccessManager>
 #include <QMediaPlayer>
 #include <QStandardItemModel>
 #include <QLabel>
-#include "form.h"
-#include "ui_form.h"
+#include <QPushButton>
 
 namespace Ui {
 class MainWindow;
@@ -35,9 +36,11 @@ private:
     QList<Lyric> lyrics;
     QLabel *label_lyric;
     Form *DesktopLyric;
+    QPushButton *pushButton_fontcolor;
 
 private slots:
     void on_action_directory_triggered();
+    void on_action_settings_triggered();
     void on_action_about_triggered();
     void on_pushButton_pageLast_clicked();
     void on_pushButton_pageNext_clicked();
@@ -55,7 +58,8 @@ private slots:
     void setMPPosition();
     void stateChange(QMediaPlayer::State);
     void updateProgress(qint64, qint64);
-
+    void chooseFont();
+    void chooseFontColor();
 };
 
 #endif // MAINWINDOW_H
