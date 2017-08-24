@@ -18,6 +18,8 @@
 #include <QTextCodec>
 #include <QFontDialog>
 #include <QColorDialog>
+#include <QSettings>
+#include <QDir>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -69,6 +71,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     DesktopLyric = new Form;
     DesktopLyric->move((QApplication::desktop()->width()-DesktopLyric->width())/2, y() + height() + 30);
+    QColor color(readSettings(QDir::currentPath() + "/config.ini", "LyricFontColor"));
+    QPalette plt;
+    plt.setColor(QPalette::WindowText, color);
+    DesktopLyric->ui->label_lyric->setPalette(plt);
+    QString sfont = readSettings(QDir::currentPath() + "/config.ini", "Font");
+    QStringList SLFont = sfont.split(",");
+    bool ok;
+    DesktopLyric->ui->label_lyric->setFont(QFont(SLFont.at(0),SLFont.at(1).toInt(&ok),SLFont.at(2).toInt(&ok),SLFont.at(3).toInt(&ok)));
     DesktopLyric->show();
 }
 
@@ -169,6 +179,7 @@ void MainWindow::getKey()
 
 void MainWindow::playSong(int r,int c)
 {
+    Q_UNUSED(c);
     ui->pushButton_download->setStyleSheet("");
     ui->label_SongSinger->setText(ui->tableWidget->item(r,0)->text() + " - " + ui->tableWidget->item(r,1)->text());
     QString surl=ui->tableWidget->item(r,2)->text();
@@ -360,16 +371,16 @@ void MainWindow::on_pushButton_lyric_clicked()
 
 void MainWindow::on_action_settings_triggered()
 {
-    QDialog *dialog=new QDialog;
-    dialog->setWindowTitle("设置");
-    dialog->setFixedSize(500,400);
+    dialog_settings = new QDialog;
+    dialog_settings->setWindowTitle("设置");
+    dialog_settings->setFixedSize(500,400);
     QVBoxLayout *vbox = new QVBoxLayout;
     QHBoxLayout *hbox = new QHBoxLayout;
     QLabel *label = new QLabel("歌词");
     hbox->addWidget(label);
     QPushButton *pushButton_font = new QPushButton;
-    //pushButton_font->setAlignment(Qt::AlignCenter);
-    pushButton_font->setText(DesktopLyric->ui->label_lyric->font().family() + "," + QString::number(DesktopLyric->ui->label_lyric->font().pointSize()));
+    QString sfont = DesktopLyric->ui->label_lyric->font().family() + "," + QString::number(DesktopLyric->ui->label_lyric->font().pointSize()) + "," + DesktopLyric->ui->label_lyric->font().weight() + "," + DesktopLyric->ui->label_lyric->font().italic();
+    pushButton_font->setText(sfont);
     connect(pushButton_font,SIGNAL(pressed()),this,SLOT(chooseFont()));
     hbox->addWidget(pushButton_font);
     pushButton_fontcolor = new QPushButton;
@@ -381,8 +392,8 @@ void MainWindow::on_action_settings_triggered()
     connect(pushButton_fontcolor,SIGNAL(pressed()),this,SLOT(chooseFontColor()));
     hbox->addWidget(pushButton_fontcolor);
     vbox->addLayout(hbox);
-    dialog->setLayout(vbox);
-    dialog->show();
+    dialog_settings->setLayout(vbox);
+    dialog_settings->show();
 }
 
 void MainWindow::chooseFont()
@@ -391,6 +402,8 @@ void MainWindow::chooseFont()
     QFont font = QFontDialog::getFont(&ok, DesktopLyric->ui->label_lyric->font(), this, "选择字体");
     if(ok){
        DesktopLyric->ui->label_lyric->setFont(font);
+       QString sfont = font.family() + "," + QString::number(font.pointSize()) + "," + font.weight() + "," + font.italic();
+       writeSettings(QDir::currentPath() + "/config.ini", "Font", sfont);
     }
 }
 
@@ -403,4 +416,28 @@ void MainWindow::chooseFontColor()
     DesktopLyric->ui->label_lyric->setPalette(plt);
     plt.setColor(QPalette::ButtonText, color);
     pushButton_fontcolor->setPalette(plt);
+    writeSettings(QDir::currentPath() + "/config.ini", "LyricFontColor", color.name());
+}
+
+QString MainWindow::readSettings(QString path, QString key)
+{
+    QSettings setting(path, QSettings::IniFormat);
+    setting.beginGroup("config");
+    QString value = setting.value(key).toString();
+    return value;
+}
+
+void MainWindow::writeSettings(QString path, QString key, QString value)
+{
+    QSettings *config = new QSettings(path, QSettings::IniFormat);
+    config->beginGroup("config");
+    config->setValue(key, value);
+    config->endGroup();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    Q_UNUSED(event);
+    DesktopLyric->close();
+    dialog_settings->close();
 }

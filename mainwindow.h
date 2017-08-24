@@ -26,17 +26,21 @@ private:
     Ui::MainWindow *ui;
     QNetworkAccessManager *NAM;
     QString key,downloadDir;
-    void getKey();
     QMediaPlayer *player;
+    QLabel *label_lyric;
+    Form *DesktopLyric;
+    QDialog *dialog_settings;
+    QPushButton *pushButton_fontcolor;
     int page;
     struct Lyric{
         QTime time;
         QString sentence;
     };
     QList<Lyric> lyrics;
-    QLabel *label_lyric;
-    Form *DesktopLyric;
-    QPushButton *pushButton_fontcolor;
+    void getKey();
+    QString readSettings(QString path, QString key);
+    void writeSettings(QString path, QString key, QString value);
+    void closeEvent(QCloseEvent *event);
 
 private slots:
     void on_action_directory_triggered();
