@@ -242,9 +242,11 @@ void MainWindow::on_pushButton_skipb_clicked()
 void MainWindow::positionChange(qint64 p)
 {
     ui->slider_progress->setValue(p);
+
     // 歌词选行
     QTime t(0,0,0);
     t=t.addMSecs(p);
+    // 非最后一句
     for(int i=0;i<lyrics.size()-1;i++){
         //qDebug() << t << lyrics.at(i).time;
         if(t>lyrics.at(i).time && t<lyrics.at(i+1).time){
@@ -255,6 +257,18 @@ void MainWindow::positionChange(qint64 p)
                 DesktopLyric->ui->label_lyric->setText(lyrics.at(i).sentence);
             }
             break;
+        }
+    }
+    //最后一句
+    if(lyrics.size()>0){
+        int j = lyrics.size()-1;
+        if(t>lyrics.at(j).time){
+            if(DesktopLyric->isHidden()){
+                ui->label_lyric->setText(lyrics.at(j).sentence);
+            }else{
+                ui->label_lyric->setText("");
+                DesktopLyric->ui->label_lyric->setText(lyrics.at(j).sentence);
+            }
         }
     }
 }
@@ -384,12 +398,17 @@ void MainWindow::on_action_settings_triggered()
 
 void MainWindow::chooseFont()
 {
+    qDebug() << "label_before" << DesktopLyric->ui->label_lyric->size();
     bool ok;
     QFont font = QFontDialog::getFont(&ok, DesktopLyric->ui->label_lyric->font(), this, "选择字体");
     if(ok){
-       DesktopLyric->ui->label_lyric->setFont(font);
+       DesktopLyric->ui->label_lyric->setFont(font);       
        QString sfont = font.family() + "," + QString::number(font.pointSize()) + "," + font.weight() + "," + font.italic();
-       writeSettings(QDir::currentPath() + "/config.ini", "Font", sfont);
+       writeSettings(QDir::currentPath() + "/config.ini", "Font", sfont);       
+       DesktopLyric->ui->label_lyric->adjustSize();
+       qDebug() << "label_after" << DesktopLyric->ui->label_lyric->size();
+       DesktopLyric->resize(DesktopLyric->ui->label_lyric->size());
+       qDebug() << "window" << DesktopLyric->size();
     }
 }
 
