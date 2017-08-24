@@ -29,7 +29,7 @@ private:
     QMediaPlayer *player;
     QLabel *label_lyric;
     Form *DesktopLyric;
-    QDialog *dialog_settings;
+
     QPushButton *pushButton_fontcolor;
     int page;
     struct Lyric{

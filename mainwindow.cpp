@@ -100,7 +100,7 @@ void MainWindow::on_action_directory_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QDialog *dialog=new QDialog;
+    QDialog *dialog=new QDialog(this);
     dialog->setWindowTitle("关于");
     dialog->setFixedSize(500,360);
     QVBoxLayout *vbox=new QVBoxLayout;
@@ -371,9 +371,9 @@ void MainWindow::on_pushButton_lyric_clicked()
 
 void MainWindow::on_action_settings_triggered()
 {
-    dialog_settings = new QDialog;
+    QDialog *dialog_settings = new QDialog(this);
     dialog_settings->setWindowTitle("设置");
-    dialog_settings->setFixedSize(400,300);
+    dialog_settings->setFixedSize(300,200);
     QVBoxLayout *vbox = new QVBoxLayout;
     QHBoxLayout *hbox = new QHBoxLayout;
     QLabel *label = new QLabel("歌词");
@@ -416,12 +416,14 @@ void MainWindow::chooseFontColor()
 {
     QPalette plt = DesktopLyric->ui->label_lyric->palette();
     QBrush brush = plt.color(QPalette::WindowText);
-    QColor color = QColorDialog::getColor(brush.color(), this);
-    plt.setColor(QPalette::WindowText, color);
-    DesktopLyric->ui->label_lyric->setPalette(plt);
-    plt.setColor(QPalette::ButtonText, color);
-    pushButton_fontcolor->setPalette(plt);
-    writeSettings(QDir::currentPath() + "/config.ini", "LyricFontColor", color.name());
+    QColor color = QColorDialog::getColor(brush.color(), this);    
+    if(color.isValid()){
+        plt.setColor(QPalette::WindowText, color);
+        DesktopLyric->ui->label_lyric->setPalette(plt);
+        plt.setColor(QPalette::ButtonText, color);
+        pushButton_fontcolor->setPalette(plt);
+        writeSettings(QDir::currentPath() + "/config.ini", "LyricFontColor", color.name());
+    }
 }
 
 QString MainWindow::readSettings(QString path, QString key)
