@@ -2,6 +2,8 @@
 #include "ui_form.h"
 #include <QMouseEvent>
 #include <QDebug>
+#include <QDir>
+#include <QSettings>
 
 Form::Form(QWidget *parent) :
     QWidget(parent),
@@ -38,6 +40,8 @@ void Form::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
     m_bPressed = false;
+    writeSettings(QDir::currentPath() + "/config.ini", "LyricX", QString::number(x()));
+    writeSettings(QDir::currentPath() + "/config.ini", "LyricY", QString::number(y()));
 }
 
 void Form::enterEvent(QEvent *event)
@@ -50,4 +54,20 @@ void Form::leaveEvent(QEvent *event)
 {
     Q_UNUSED(event);
     ui->label_lyric->setStyleSheet("");
+}
+
+QString Form::readSettings(QString path, QString key)
+{
+    QSettings setting(path, QSettings::IniFormat);
+    setting.beginGroup("config");
+    QString value = setting.value(key).toString();
+    return value;
+}
+
+void Form::writeSettings(QString path, QString key, QString value)
+{
+    QSettings *config = new QSettings(path, QSettings::IniFormat);
+    config->beginGroup("config");
+    config->setValue(key, value);
+    config->endGroup();
 }

@@ -70,7 +70,13 @@ MainWindow::MainWindow(QWidget *parent) :
     getKey();
 
     DesktopLyric = new Form;
-    DesktopLyric->move((QApplication::desktop()->width()-DesktopLyric->width())/2, y() + height() + 30);
+    QString slx = readSettings(QDir::currentPath() + "/config.ini", "LyricX");
+    QString sly = readSettings(QDir::currentPath() + "/config.ini", "LyricY");
+    if(slx=="" || sly==""){
+        DesktopLyric->move((QApplication::desktop()->width()-DesktopLyric->width())/2, y() + height() + 30);
+    }else{
+        DesktopLyric->move(slx.toInt(),sly.toInt());
+    }
     QColor color(readSettings(QDir::currentPath() + "/config.ini", "LyricFontColor"));
     QPalette plt;
     plt.setColor(QPalette::WindowText, color);
@@ -187,40 +193,19 @@ void MainWindow::playSong(int r,int c)
     player->setMedia(QUrl(surl));
     player->play();
     ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-    ui->slider_progress->setMaximum(player->duration());    
-    QString album_cover_small = QString("https://y.gtimg.cn/music/photo_new/T002R150x150M000%1.jpg").arg(ui->tableWidget->item(r,3)->text());
-    QNetworkRequest request(album_cover_small);
-    QNetworkReply *reply = NAM->get(request);
-    QEventLoop loop;
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
-    QPixmap pixmap;
-    pixmap.loadFromData(reply->readAll());
-    ui->label_cover->setPixmap(pixmap.scaled(70,70));
+    ui->slider_progress->setMaximum(player->duration());
+    // 专辑封面
+    QString album_cover_small = QString("https://y.gtimg.cn/music/photo_new/T002R150x150M000%1.jpg").arg(ui->tableWidget->item(r,3)->text());    
+    NAM->get(QNetworkRequest(album_cover_small));
+    connect(NAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAlbumPixmap(QNetworkReply*)));
+    // 歌词
+    ui->textBrowser->setText("");
+    DesktopLyric->ui->label_lyric->setText("");
+    ui->label_lyric->setText("");
     qDebug() << "歌词" << ui->tableWidget->item(r,4)->text();
-    request.setUrl(QUrl(ui->tableWidget->item(r,4)->text()));
-    reply = NAM->get(request);
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
-    QByteArray BAReply = reply->readAll();
-    if(BAReply.indexOf("GB2312")==-1){
-        ui->textBrowser->setText(BAReply);
-    }else{
-        QString lrc = QTextCodec::codecForName("GBK")->toUnicode(BAReply);
-        lrc = lrc.mid(lrc.indexOf("<![CDATA[")+9, lrc.indexOf("]]>")-lrc.indexOf("<![CDATA[")-9);
-        ui->textBrowser->setText(lrc);
-        QStringList line=lrc.split("\n");
-        lyrics.clear();
-        for(int i=0;i<line.size();i++){
-            if(line.at(i).contains("]") && !line.at(i).contains("ti:") && !line.at(i).contains("ar:") && !line.at(i).contains("al:") && !line.at(i).contains("by:") && !line.at(i).contains("offset:")){
-                QStringList strlist=line.at(i).split("]");
-                Lyric lyric;
-                lyric.time = QTime::fromString(strlist.at(0).mid(1,8)+"0","mm:ss.zzz");
-                lyric.sentence = strlist.at(1);
-                lyrics.append(lyric);
-            }
-        }        
-    }
+    QNetworkAccessManager *NAMLirics = new QNetworkAccessManager;
+    NAMLirics->get(QNetworkRequest(ui->tableWidget->item(r,4)->text()));
+    connect(NAMLirics, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyLyrics(QNetworkReply*)));
 }
 
 void MainWindow::on_pushButton_play_clicked()
@@ -438,6 +423,36 @@ void MainWindow::writeSettings(QString path, QString key, QString value)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
-    DesktopLyric->close();
-    dialog_settings->close();
+    QCoreApplication::exit();
+}
+
+void MainWindow::replyAlbumPixmap(QNetworkReply *reply)
+{
+    QPixmap pixmap;
+    pixmap.loadFromData(reply->readAll());
+    ui->label_cover->setPixmap(pixmap.scaled(70,70));
+}
+
+void MainWindow::replyLyrics(QNetworkReply *reply)
+{
+    QByteArray BAReply = reply->readAll();
+    if(BAReply.indexOf("GB2312")==-1){
+        ui->textBrowser->setText(BAReply);
+        lyrics.clear();
+    }else{
+        QString lrc = QTextCodec::codecForName("GBK")->toUnicode(BAReply);
+        lrc = lrc.mid(lrc.indexOf("<![CDATA[")+9, lrc.indexOf("]]>")-lrc.indexOf("<![CDATA[")-9);
+        ui->textBrowser->setText(lrc);
+        QStringList line=lrc.split("\n");
+        lyrics.clear();
+        for(int i=0;i<line.size();i++){
+            if(line.at(i).contains("]") && !line.at(i).contains("ti:") && !line.at(i).contains("ar:") && !line.at(i).contains("al:") && !line.at(i).contains("by:") && !line.at(i).contains("offset:")){
+                QStringList strlist=line.at(i).split("]");
+                Lyric lyric;
+                lyric.time = QTime::fromString(strlist.at(0).mid(1,8)+"0","mm:ss.zzz");
+                lyric.sentence = strlist.at(1);
+                lyrics.append(lyric);
+            }
+        }
+    }
 }

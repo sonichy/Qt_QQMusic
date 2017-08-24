@@ -64,6 +64,8 @@ private slots:
     void updateProgress(qint64, qint64);
     void chooseFont();
     void chooseFontColor();
+    void replyAlbumPixmap(QNetworkReply *reply);
+    void replyLyrics(QNetworkReply *reply);
 };
 
 #endif // MAINWINDOW_H

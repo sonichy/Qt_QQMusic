@@ -24,8 +24,8 @@ private:
     void mouseReleaseEvent(QMouseEvent*);
     void enterEvent(QEvent*);
     void leaveEvent(QEvent*);
-
-private slots:
+    QString readSettings(QString path, QString key);
+    void writeSettings(QString path, QString key, QString value);
 
 };
 
