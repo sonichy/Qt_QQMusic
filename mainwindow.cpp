@@ -195,9 +195,10 @@ void MainWindow::playSong(int r,int c)
     ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
     ui->slider_progress->setMaximum(player->duration());
     // 专辑封面
-    QString album_cover_small = QString("https://y.gtimg.cn/music/photo_new/T002R150x150M000%1.jpg").arg(ui->tableWidget->item(r,3)->text());    
-    NAM->get(QNetworkRequest(album_cover_small));
-    connect(NAM, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAlbumPixmap(QNetworkReply*)));
+    QNetworkAccessManager *NAMAlbumCover = new QNetworkAccessManager;
+    QString album_cover_small = QString("https://y.gtimg.cn/music/photo_new/T002R150x150M000%1.jpg").arg(ui->tableWidget->item(r,3)->text());
+    NAMAlbumCover->get(QNetworkRequest(album_cover_small));
+    connect(NAMAlbumCover, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAlbumPixmap(QNetworkReply*)));
     // 歌词
     ui->textBrowser->setText("");
     DesktopLyric->ui->label_lyric->setText("");
@@ -358,7 +359,7 @@ void MainWindow::on_action_settings_triggered()
 {
     dialog_settings = new QDialog;
     dialog_settings->setWindowTitle("设置");
-    dialog_settings->setFixedSize(500,400);
+    dialog_settings->setFixedSize(400,300);
     QVBoxLayout *vbox = new QVBoxLayout;
     QHBoxLayout *hbox = new QHBoxLayout;
     QLabel *label = new QLabel("歌词");
