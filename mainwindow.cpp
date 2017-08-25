@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->textBrowser->zoomIn(2);
     ui->pushButton_skipb->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     ui->pushButton_skipf->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
@@ -258,7 +259,7 @@ void MainWindow::positionChange(qint64 p)
     // 歌词选行
     QTime t(0,0,0);
     t=t.addMSecs(p);
-    // 非最后一句
+    // 非最后一句    
     for(int i=0;i<lyrics.size()-1;i++){
         //qDebug() << t << lyrics.at(i).time;
         if(t>lyrics.at(i).time && t<lyrics.at(i+1).time){
@@ -268,7 +269,7 @@ void MainWindow::positionChange(qint64 p)
                 ui->label_lyric->setText("");
                 DesktopLyric->ui->label_lyric->setText(lyrics.at(i).sentence);
             }
-            break;
+            ui->textBrowser->find(lyrics.at(i).sentence);
         }
     }
     //最后一句
@@ -281,6 +282,7 @@ void MainWindow::positionChange(qint64 p)
                 ui->label_lyric->setText("");
                 DesktopLyric->ui->label_lyric->setText(lyrics.at(j).sentence);
             }
+            //ui->textBrowser->find(lyrics.at(j).sentence);
         }
     }
 }
@@ -443,7 +445,7 @@ void MainWindow::chooseFontColor()
 {
     QPalette plt = DesktopLyric->ui->label_lyric->palette();
     QBrush brush = plt.color(QPalette::WindowText);
-    QColor color = QColorDialog::getColor(brush.color(), this);    
+    QColor color = QColorDialog::getColor(brush.color(), this);
     if(color.isValid()){
         plt.setColor(QPalette::WindowText, color);
         DesktopLyric->ui->label_lyric->setPalette(plt);
@@ -484,16 +486,14 @@ void MainWindow::replyAlbumPixmap(QNetworkReply *reply)
 
 void MainWindow::replyLyrics(QNetworkReply *reply)
 {
+    lyrics.clear();
     QByteArray BAReply = reply->readAll();
     if(BAReply.indexOf("GB2312")==-1){
         ui->textBrowser->setText(BAReply);
-        lyrics.clear();
     }else{
         QString lrc = QTextCodec::codecForName("GBK")->toUnicode(BAReply);
         lrc = lrc.mid(lrc.indexOf("<![CDATA[")+9, lrc.indexOf("]]>")-lrc.indexOf("<![CDATA[")-9);
-        ui->textBrowser->setText(lrc);
         QStringList line=lrc.split("\n");
-        lyrics.clear();
         for(int i=0;i<line.size();i++){
             if(line.at(i).contains("]") && !line.at(i).contains("ti:") && !line.at(i).contains("ar:") && !line.at(i).contains("al:") && !line.at(i).contains("by:") && !line.at(i).contains("offset:")){
                 QStringList strlist=line.at(i).split("]");
@@ -503,6 +503,13 @@ void MainWindow::replyLyrics(QNetworkReply *reply)
                 lyrics.append(lyric);
             }
         }
+        for(int i=0;i<lyrics.size();i++){
+            ui->textBrowser->insertPlainText(lyrics.at(i).sentence+"\n");
+        }
+        QTextCursor cursor=ui->textBrowser->textCursor();
+        cursor.setPosition(0,QTextCursor::MoveAnchor);
+        ui->textBrowser->setTextCursor(cursor);
+        //cursor.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
     }
 }
 
