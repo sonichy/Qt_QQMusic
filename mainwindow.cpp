@@ -20,6 +20,8 @@
 #include <QColorDialog>
 #include <QSettings>
 #include <QDir>
+#include <QFileDialog>
+#include <QClipboard>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -39,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableWidget->setColumnHidden(3,true);
     ui->tableWidget->setColumnHidden(4,true);
     ui->tableWidget->setColumnWidth(0,ui->tableWidget->width());
+    connect(ui->tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(copy(int,int)));
     connect(ui->tableWidget,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(playSong(int,int)));
     player = new QMediaPlayer;
     player->setVolume(100);
@@ -65,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->listWidget_mine->insertItem(3, LWI3);
     ui->listWidget_mine->insertItem(4, LWI4);
     ui->listWidget_mine->insertItem(5, LWI5);
-    downloadDir = QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first();
+    downloadPath = QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first();
     NAM = new QNetworkAccessManager;
     getKey();
 
@@ -83,9 +86,13 @@ MainWindow::MainWindow(QWidget *parent) :
     DesktopLyric->ui->label_lyric->setPalette(plt);
     QString sfont = readSettings(QDir::currentPath() + "/config.ini", "Font");
     QStringList SLFont = sfont.split(",");
-    bool ok;
-    DesktopLyric->ui->label_lyric->setFont(QFont(SLFont.at(0),SLFont.at(1).toInt(&ok),SLFont.at(2).toInt(&ok),SLFont.at(3).toInt(&ok)));
+    DesktopLyric->ui->label_lyric->setFont(QFont(SLFont.at(0),SLFont.at(1).toInt(),SLFont.at(2).toInt(),SLFont.at(3).toInt()));
     DesktopLyric->show();
+
+    downloadPath = readSettings(QDir::currentPath() + "/config.ini", "DownloadPath");
+    if(downloadPath==""){
+        downloadPath = QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -95,7 +102,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_action_directory_triggered()
 {
-    QDesktopServices::openUrl(QUrl::fromLocalFile(downloadDir));
+    QDesktopServices::openUrl(QUrl::fromLocalFile(downloadPath));
 }
 
 void MainWindow::on_action_about_triggered()
@@ -183,7 +190,12 @@ void MainWindow::getKey()
     qDebug() << "key:" << key;
 }
 
-void MainWindow::playSong(int r,int c)
+void MainWindow::copy(int r, int c)
+{
+    QApplication::clipboard()->setText(ui->tableWidget->item(r,c)->text());
+}
+
+void MainWindow::playSong(int r, int c)
 {
     Q_UNUSED(c);
     ui->pushButton_download->setStyleSheet("");
@@ -320,7 +332,7 @@ void MainWindow::on_pushButton_download_clicked()
         connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
         loop.exec();
         QString filename = ui->tableWidget->item(ui->tableWidget->currentRow(),0)->text() + " - " + ui->tableWidget->item(ui->tableWidget->currentRow(),1)->text() + "." + QFileInfo(surl).suffix().left(QFileInfo(surl).suffix().indexOf("?"));
-        QString filepath = downloadDir + "/" + filename;
+        QString filepath = downloadPath + "/" + filename;
         //qDebug() <<  "path -> " + filepath;
         QFile file(filepath);
         file.open(QIODevice::WriteOnly);
@@ -340,7 +352,7 @@ void MainWindow::updateProgress(qint64 bytesReceived, qint64 bytesTotal)
                                                    "stop:%2 rgba(255, 255, 255, 255), stop:1 rgba(255, 255, 255, 255));")
                                       .arg(p-0.001)
                                       .arg(p));
-    //qDebug() << p <<ui->pushButton_download->styleSheet();
+    qDebug() << p <<ui->pushButton_download->styleSheet();
 }
 
 void MainWindow::on_pushButton_pageLast_clicked()
@@ -371,7 +383,7 @@ void MainWindow::on_pushButton_lyric_clicked()
 
 void MainWindow::on_action_settings_triggered()
 {
-    QDialog *dialog_settings = new QDialog(this);
+    dialog_settings = new QDialog(this);
     dialog_settings->setWindowTitle("设置");
     dialog_settings->setFixedSize(300,200);
     QVBoxLayout *vbox = new QVBoxLayout;
@@ -392,6 +404,21 @@ void MainWindow::on_action_settings_triggered()
     connect(pushButton_fontcolor,SIGNAL(pressed()),this,SLOT(chooseFontColor()));
     hbox->addWidget(pushButton_fontcolor);
     vbox->addLayout(hbox);
+    hbox = new QHBoxLayout;
+    label = new QLabel("保存路径");
+    hbox->addWidget(label);
+    LEDP = new QLineEdit;
+    downloadPath = readSettings(QDir::currentPath() + "/config.ini", "DownloadPath");
+    if(downloadPath==""){
+        LEDP->setText(QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first());
+    }else{
+        LEDP->setText(downloadPath);
+    }
+    hbox->addWidget(LEDP);
+    QPushButton *pushButton_downloadPath = new QPushButton("选择路径");
+    connect(pushButton_downloadPath,SIGNAL(pressed()),this,SLOT(chooseDownloadPath()));
+    hbox->addWidget(pushButton_downloadPath);
+    vbox->addLayout(hbox);
     dialog_settings->setLayout(vbox);
     dialog_settings->show();
 }
@@ -404,7 +431,7 @@ void MainWindow::chooseFont()
     if(ok){
        DesktopLyric->ui->label_lyric->setFont(font);       
        QString sfont = font.family() + "," + QString::number(font.pointSize()) + "," + font.weight() + "," + font.italic();
-       writeSettings(QDir::currentPath() + "/config.ini", "Font", sfont);       
+       writeSettings(QDir::currentPath() + "/config.ini", "Font", sfont);
        DesktopLyric->ui->label_lyric->adjustSize();
        qDebug() << "label_after" << DesktopLyric->ui->label_lyric->size();
        DesktopLyric->resize(DesktopLyric->ui->label_lyric->size());
@@ -476,5 +503,14 @@ void MainWindow::replyLyrics(QNetworkReply *reply)
                 lyrics.append(lyric);
             }
         }
+    }
+}
+
+void MainWindow::chooseDownloadPath()
+{
+    downloadPath = QFileDialog::getExistingDirectory(dialog_settings,"保存路径",downloadPath, QFileDialog::ShowDirsOnly |QFileDialog::DontResolveSymlinks);
+    if(downloadPath!=""){
+        LEDP->setText(downloadPath);
+        writeSettings(QDir::currentPath() + "/config.ini", "DownloadPath", downloadPath);
     }
 }

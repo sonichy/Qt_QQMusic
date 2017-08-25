@@ -686,7 +686,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
              </size>
             </property>
             <property name="flat">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -730,7 +730,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
     <string>下载文件夹</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+D</string>
+    <string>Alt+D</string>
    </property>
   </action>
   <action name="action_settings">

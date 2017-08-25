@@ -25,11 +25,12 @@ public:
 private:
     Ui::MainWindow *ui;
     QNetworkAccessManager *NAM;
-    QString key,downloadDir;
+    QString key,downloadPath;
     QMediaPlayer *player;
     QLabel *label_lyric;
     Form *DesktopLyric;
-
+    QDialog *dialog_settings;
+    QLineEdit *LEDP;
     QPushButton *pushButton_fontcolor;
     int page;
     struct Lyric{
@@ -55,6 +56,7 @@ private slots:
     void on_pushButton_download_clicked();
     void initSearch();
     void search();
+    void copy(int,int);
     void playSong(int,int);
     void positionChange(qint64);
     void durationChange(qint64);
@@ -64,6 +66,7 @@ private slots:
     void updateProgress(qint64, qint64);
     void chooseFont();
     void chooseFontColor();
+    void chooseDownloadPath();
     void replyAlbumPixmap(QNetworkReply *reply);
     void replyLyrics(QNetworkReply *reply);
 };
