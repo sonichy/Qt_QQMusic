@@ -22,13 +22,30 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QClipboard>
+#include <QTextBlock>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     ui->textBrowser->zoomIn(2);
+//    QPalette p2;
+//    //设置文本编辑框的背景色
+//    //p2.setColor(QPalette::Base,QColor(Qt::gray));
+//    //设置文本编辑框文字的颜色
+//    p2.setColor(QPalette::Text,QColor(Qt::black));
+//    //设置文本编辑框高亮时的文字背景颜色（Active）
+//    //p2.setColor(QPalette::Active,QPalette::Highlight,QColor(Qt::white));
+//    //设置文本编辑框高亮时文字的颜色(Active)
+//    p2.setColor(QPalette::Active,QPalette::HighlightedText,QColor(Qt::green));
+//    //为保持文本状态一致（好看一些）,在丢失焦点的时候设置颜色
+//    //p2.setColor(QPalette::Inactive,QPalette::Highlight,QColor(Qt::white));
+//    p2.setColor(QPalette::Inactive,QPalette::HighlightedText,QColor(Qt::black));
+//    //将焦点应用到控件
+//    ui->textBrowser->setPalette(p2);
+
     ui->pushButton_skipb->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     ui->pushButton_skipf->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
@@ -257,9 +274,10 @@ void MainWindow::positionChange(qint64 p)
     ui->slider_progress->setValue(p);
 
     // 歌词选行
+    int hl;
     QTime t(0,0,0);
     t=t.addMSecs(p);
-    // 非最后一句    
+    // 非最后一句
     for(int i=0;i<lyrics.size()-1;i++){
         //qDebug() << t << lyrics.at(i).time;
         if(t>lyrics.at(i).time && t<lyrics.at(i+1).time){
@@ -268,8 +286,9 @@ void MainWindow::positionChange(qint64 p)
             }else{
                 ui->label_lyric->setText("");
                 DesktopLyric->ui->label_lyric->setText(lyrics.at(i).sentence);
-            }
-            ui->textBrowser->find(lyrics.at(i).sentence);
+            }            
+            hl=i;
+            break;
         }
     }
     //最后一句
@@ -281,9 +300,24 @@ void MainWindow::positionChange(qint64 p)
             }else{
                 ui->label_lyric->setText("");
                 DesktopLyric->ui->label_lyric->setText(lyrics.at(j).sentence);
-            }
-            //ui->textBrowser->find(lyrics.at(j).sentence);
+            }            
+            hl=j;
         }
+    }
+    for(int a=0;a<lyrics.size();a++){
+        QTextCursor cursor(ui->textBrowser->document()->findBlockByLineNumber(a));
+        QTextBlockFormat TBF = cursor.blockFormat();
+        TBF.setForeground(QBrush(Qt::black));
+        TBF.setBackground(QBrush(Qt::transparent));
+        cursor.setBlockFormat(TBF);
+    }
+    if(lyrics.size()>0){
+        QTextCursor cursor1(ui->textBrowser->document()->findBlockByLineNumber(hl));
+        QTextBlockFormat TBF1 = cursor1.blockFormat();
+        TBF1.setForeground(QBrush(Qt::green));
+        TBF1.setBackground(QBrush(Qt::yellow));
+        cursor1.setBlockFormat(TBF1);
+        ui->textBrowser->setTextCursor(cursor1);
     }
 }
 
@@ -474,6 +508,7 @@ void MainWindow::writeSettings(QString path, QString key, QString value)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
+    player->stop();
     QCoreApplication::exit();
 }
 
