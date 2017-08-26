@@ -27,6 +27,8 @@ private:
     QString readSettings(QString path, QString key);
     void writeSettings(QString path, QString key, QString value);
 
+private slots:
+    void on_pushButton_close_clicked();
 };
 
 #endif // FORM_H
