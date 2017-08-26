@@ -105,6 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QString sfont = readSettings(QDir::currentPath() + "/config.ini", "Font");
     QStringList SLFont = sfont.split(",");
     DesktopLyric->ui->label_lyric->setFont(QFont(SLFont.at(0),SLFont.at(1).toInt(),SLFont.at(2).toInt(),SLFont.at(3).toInt()));
+    connect(DesktopLyric,SIGNAL(pushButton_lyric_toggle()),ui->pushButton_lyric,SLOT(toggle()));
     DesktopLyric->show();
 
     downloadPath = readSettings(QDir::currentPath() + "/config.ini", "DownloadPath");

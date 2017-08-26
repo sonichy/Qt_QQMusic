@@ -79,4 +79,5 @@ void Form::writeSettings(QString path, QString key, QString value)
 void Form::on_pushButton_close_clicked()
 {
     hide();
+    emit pushButton_lyric_toggle();
 }

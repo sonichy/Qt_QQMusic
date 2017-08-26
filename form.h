@@ -27,6 +27,9 @@ private:
     QString readSettings(QString path, QString key);
     void writeSettings(QString path, QString key, QString value);
 
+signals:
+    void pushButton_lyric_toggle();
+
 private slots:
     void on_pushButton_close_clicked();
 };
