@@ -681,8 +681,8 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
             </property>
             <property name="iconSize">
              <size>
-              <width>32</width>
-              <height>32</height>
+              <width>24</width>
+              <height>24</height>
              </size>
             </property>
             <property name="flat">
