@@ -29,23 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     ui->textBrowser->zoomIn(2);
-//    QPalette p2;
-//    //设置文本编辑框的背景色
-//    //p2.setColor(QPalette::Base,QColor(Qt::gray));
-//    //设置文本编辑框文字的颜色
-//    p2.setColor(QPalette::Text,QColor(Qt::black));
-//    //设置文本编辑框高亮时的文字背景颜色（Active）
-//    //p2.setColor(QPalette::Active,QPalette::Highlight,QColor(Qt::white));
-//    //设置文本编辑框高亮时文字的颜色(Active)
-//    p2.setColor(QPalette::Active,QPalette::HighlightedText,QColor(Qt::green));
-//    //为保持文本状态一致（好看一些）,在丢失焦点的时候设置颜色
-//    //p2.setColor(QPalette::Inactive,QPalette::Highlight,QColor(Qt::white));
-//    p2.setColor(QPalette::Inactive,QPalette::HighlightedText,QColor(Qt::black));
-//    //将焦点应用到控件
-//    ui->textBrowser->setPalette(p2);
-
     ui->pushButton_skipb->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
     ui->pushButton_skipf->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
@@ -90,25 +74,26 @@ MainWindow::MainWindow(QWidget *parent) :
     NAM = new QNetworkAccessManager;
     getKey();
 
-    DesktopLyric = new Form;
+    desktopLyric = new Form;
     QString slx = readSettings(QDir::currentPath() + "/config.ini", "LyricX");
     QString sly = readSettings(QDir::currentPath() + "/config.ini", "LyricY");
     if(slx=="" || sly==""){
-        DesktopLyric->move((QApplication::desktop()->width()-DesktopLyric->width())/2, y() + height() + 30);
+        desktopLyric->move((QApplication::desktop()->width()-desktopLyric->width())/2, y() + height() + 30);
     }else{
-        DesktopLyric->move(slx.toInt(),sly.toInt());
+        desktopLyric->move(slx.toInt(),sly.toInt());
     }
     QColor color(readSettings(QDir::currentPath() + "/config.ini", "LyricFontColor"));
     QPalette plt;
     plt.setColor(QPalette::WindowText, color);
-    DesktopLyric->ui->label_lyric->setPalette(plt);
+    desktopLyric->ui->label_lyric->setPalette(plt);
     QString sfont = readSettings(QDir::currentPath() + "/config.ini", "Font");
     if(sfont!=""){
         QStringList SLFont = sfont.split(",");
-        DesktopLyric->ui->label_lyric->setFont(QFont(SLFont.at(0),SLFont.at(1).toInt(),SLFont.at(2).toInt(),SLFont.at(3).toInt()));
+        desktopLyric->ui->label_lyric->setFont(QFont(SLFont.at(0),SLFont.at(1).toInt(),SLFont.at(2).toInt(),SLFont.at(3).toInt()));
     }
-    connect(DesktopLyric,SIGNAL(pushButton_lyric_toggle()),ui->pushButton_lyric,SLOT(toggle()));
-    DesktopLyric->show();
+    connect(desktopLyric, SIGNAL(pushButton_lyric_toggle()), ui->pushButton_lyric, SLOT(toggle()));
+    connect(desktopLyric, SIGNAL(pull_settings()), this, SLOT(on_action_settings_triggered()));
+    desktopLyric->show();
 
     downloadPath = readSettings(QDir::currentPath() + "/config.ini", "DownloadPath");
     if(downloadPath==""){
@@ -234,7 +219,7 @@ void MainWindow::playSong(int r, int c)
     connect(NAMAlbumCover, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAlbumPixmap(QNetworkReply*)));
     // 歌词
     ui->textBrowser->setText("");
-    DesktopLyric->ui->label_lyric->setText("");
+    desktopLyric->ui->label_lyric->setText("");
     ui->label_lyric->setText("");
     qDebug() << "歌词" << ui->tableWidget->item(r,4)->text();
     QNetworkAccessManager *NAMLirics = new QNetworkAccessManager;
@@ -284,11 +269,11 @@ void MainWindow::positionChange(qint64 p)
     for(int i=0;i<lyrics.size()-1;i++){
         //qDebug() << t << lyrics.at(i).time;
         if(t>lyrics.at(i).time && t<lyrics.at(i+1).time){
-            if(DesktopLyric->isHidden()){
+            if(desktopLyric->isHidden()){
                 ui->label_lyric->setText(lyrics.at(i).sentence);
             }else{
                 ui->label_lyric->setText("");
-                DesktopLyric->ui->label_lyric->setText(lyrics.at(i).sentence);
+                desktopLyric->ui->label_lyric->setText(lyrics.at(i).sentence);
             }            
             hl=i;
             break;
@@ -298,11 +283,11 @@ void MainWindow::positionChange(qint64 p)
     if(lyrics.size()>0){
         int j = lyrics.size()-1;
         if(t>lyrics.at(j).time){
-            if(DesktopLyric->isHidden()){
+            if(desktopLyric->isHidden()){
                 ui->label_lyric->setText(lyrics.at(j).sentence);
             }else{
                 ui->label_lyric->setText("");
-                DesktopLyric->ui->label_lyric->setText(lyrics.at(j).sentence);
+                desktopLyric->ui->label_lyric->setText(lyrics.at(j).sentence);
             }            
             hl=j;
         }
@@ -413,10 +398,10 @@ void MainWindow::on_pushButton_pageNext_clicked()
 
 void MainWindow::on_pushButton_lyric_clicked()
 {
-    if(DesktopLyric->isHidden()){
-        DesktopLyric->show();
+    if(desktopLyric->isHidden()){
+        desktopLyric->show();
     }else{
-        DesktopLyric->hide();
+        desktopLyric->hide();
     }
 }
 
@@ -430,13 +415,13 @@ void MainWindow::on_action_settings_triggered()
     QLabel *label = new QLabel("歌词");
     hbox->addWidget(label);
     QPushButton *pushButton_font = new QPushButton;
-    QString sfont = DesktopLyric->ui->label_lyric->font().family() + "," + QString::number(DesktopLyric->ui->label_lyric->font().pointSize()) + "," + DesktopLyric->ui->label_lyric->font().weight() + "," + DesktopLyric->ui->label_lyric->font().italic();
+    QString sfont = desktopLyric->ui->label_lyric->font().family() + "," + QString::number(desktopLyric->ui->label_lyric->font().pointSize()) + "," + desktopLyric->ui->label_lyric->font().weight() + "," + desktopLyric->ui->label_lyric->font().italic();
     pushButton_font->setText(sfont);
     connect(pushButton_font,SIGNAL(pressed()),this,SLOT(chooseFont()));
     hbox->addWidget(pushButton_font);
     pushButton_fontcolor = new QPushButton;
     pushButton_fontcolor->setText("■");
-    QPalette plt = DesktopLyric->ui->label_lyric->palette();
+    QPalette plt = desktopLyric->ui->label_lyric->palette();
     QBrush brush = plt.color(QPalette::WindowText);
     plt.setColor(QPalette::ButtonText, brush.color());
     pushButton_fontcolor->setPalette(plt);
@@ -464,28 +449,28 @@ void MainWindow::on_action_settings_triggered()
 
 void MainWindow::chooseFont()
 {
-    qDebug() << "label_before" << DesktopLyric->ui->label_lyric->size();
+    qDebug() << "label_before" << desktopLyric->ui->label_lyric->size();
     bool ok;
-    QFont font = QFontDialog::getFont(&ok, DesktopLyric->ui->label_lyric->font(), this, "选择字体");
+    QFont font = QFontDialog::getFont(&ok, desktopLyric->ui->label_lyric->font(), this, "选择字体");
     if(ok){
-       DesktopLyric->ui->label_lyric->setFont(font);       
+       desktopLyric->ui->label_lyric->setFont(font);
        QString sfont = font.family() + "," + QString::number(font.pointSize()) + "," + font.weight() + "," + font.italic();
        writeSettings(QDir::currentPath() + "/config.ini", "Font", sfont);
-       DesktopLyric->ui->label_lyric->adjustSize();
-       qDebug() << "label_after" << DesktopLyric->ui->label_lyric->size();
-       DesktopLyric->resize(DesktopLyric->ui->label_lyric->size());
-       qDebug() << "window" << DesktopLyric->size();
+       desktopLyric->ui->label_lyric->adjustSize();
+       qDebug() << "label_after" << desktopLyric->ui->label_lyric->size();
+       desktopLyric->resize(desktopLyric->ui->label_lyric->size());
+       qDebug() << "window" << desktopLyric->size();
     }
 }
 
 void MainWindow::chooseFontColor()
 {
-    QPalette plt = DesktopLyric->ui->label_lyric->palette();
+    QPalette plt = desktopLyric->ui->label_lyric->palette();
     QBrush brush = plt.color(QPalette::WindowText);
     QColor color = QColorDialog::getColor(brush.color(), this);
     if(color.isValid()){
         plt.setColor(QPalette::WindowText, color);
-        DesktopLyric->ui->label_lyric->setPalette(plt);
+        desktopLyric->ui->label_lyric->setPalette(plt);
         plt.setColor(QPalette::ButtonText, color);
         pushButton_fontcolor->setPalette(plt);
         writeSettings(QDir::currentPath() + "/config.ini", "LyricFontColor", color.name());
@@ -531,7 +516,7 @@ void MainWindow::replyLyrics(QNetworkReply *reply)
     }else{
         QString lrc = QTextCodec::codecForName("GBK")->toUnicode(BAReply);
         lrc = lrc.mid(lrc.indexOf("<![CDATA[")+9, lrc.indexOf("]]>")-lrc.indexOf("<![CDATA[")-9);
-        QStringList line=lrc.split("\n");
+        QStringList line = lrc.split("\n");
         for(int i=0;i<line.size();i++){
             if(line.at(i).contains("]") && !line.at(i).contains("ti:") && !line.at(i).contains("ar:") && !line.at(i).contains("al:") && !line.at(i).contains("by:") && !line.at(i).contains("offset:")){
                 QStringList strlist=line.at(i).split("]");
@@ -541,10 +526,10 @@ void MainWindow::replyLyrics(QNetworkReply *reply)
                 lyrics.append(lyric);
             }
         }
-        for(int i=0;i<lyrics.size();i++){
-            ui->textBrowser->insertPlainText(lyrics.at(i).sentence+"\n");
+        for(int i=0; i<lyrics.size(); i++){
+            ui->textBrowser->insertPlainText(lyrics.at(i).sentence + "\n");
         }
-        QTextCursor cursor=ui->textBrowser->textCursor();
+        QTextCursor cursor = ui->textBrowser->textCursor();
         cursor.setPosition(0,QTextCursor::MoveAnchor);
         ui->textBrowser->setTextCursor(cursor);
         //cursor.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
@@ -554,7 +539,7 @@ void MainWindow::replyLyrics(QNetworkReply *reply)
 void MainWindow::chooseDownloadPath()
 {
     downloadPath = QFileDialog::getExistingDirectory(dialog_settings,"保存路径",downloadPath, QFileDialog::ShowDirsOnly |QFileDialog::DontResolveSymlinks);
-    if(downloadPath!=""){
+    if(downloadPath != ""){
         LEDP->setText(downloadPath);
         writeSettings(QDir::currentPath() + "/config.ini", "DownloadPath", downloadPath);
     }

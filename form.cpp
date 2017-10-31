@@ -12,6 +12,7 @@ Form::Form(QWidget *parent) :
     ui->setupUi(this);
     ui->pushButton_close->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
     ui->pushButton_close->hide();
+    ui->pushButton_set->hide();
     setAttribute(Qt::WA_TranslucentBackground,true);
     setWindowFlags(Qt::WindowStaysOnTopHint);
     setWindowFlags(Qt::FramelessWindowHint);
@@ -49,8 +50,9 @@ void Form::mouseReleaseEvent(QMouseEvent *event)
 void Form::enterEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    setStyleSheet("border:1px solid gray;");
+    setStyleSheet("background-color: rgba(255,255,255,30);");
     ui->pushButton_close->show();
+    ui->pushButton_set->show();
 }
 
 void Form::leaveEvent(QEvent *event)
@@ -58,6 +60,7 @@ void Form::leaveEvent(QEvent *event)
     Q_UNUSED(event);
     setStyleSheet("");
     ui->pushButton_close->hide();
+    ui->pushButton_set->hide();
 }
 
 QString Form::readSettings(QString path, QString key)
@@ -80,4 +83,9 @@ void Form::on_pushButton_close_clicked()
 {
     hide();
     emit pushButton_lyric_toggle();
+}
+
+void Form::on_pushButton_set_clicked()
+{
+    emit pull_settings();
 }

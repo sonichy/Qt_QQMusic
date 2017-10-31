@@ -28,7 +28,7 @@ private:
     QString key,downloadPath;
     QMediaPlayer *player;
     QLabel *label_lyric;
-    Form *DesktopLyric;
+    Form *desktopLyric;
     QDialog *dialog_settings;
     QLineEdit *LEDP;
     QPushButton *pushButton_fontcolor;

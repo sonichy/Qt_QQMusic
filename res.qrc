@@ -12,5 +12,6 @@
         <file>LTL.png</file>
         <file>trolley.png</file>
         <file>download.png</file>
+        <file>set.png</file>
     </qresource>
 </RCC>
