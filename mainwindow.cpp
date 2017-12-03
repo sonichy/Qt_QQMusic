@@ -172,7 +172,8 @@ void MainWindow::search()
             ui->tableWidget->setItem(i,3,new QTableWidgetItem(list[i].toObject().value("albummid").toString()));
             ui->tableWidget->setItem(i,4,new QTableWidgetItem("http://music.qq.com/miniportal/static/lyric/" + QString::number(list[i].toObject().value("songid").toInt()%100)+ "/" + QString::number(list[i].toObject().value("songid").toInt()) + ".xml"));
         }
-        ui->tableWidget->resizeColumnsToContents();        
+        ui->tableWidget->resizeColumnsToContents();
+        ui->tableWidget->scrollToTop();
     }
 }
 
@@ -370,13 +371,13 @@ void MainWindow::on_pushButton_download_clicked()
 void MainWindow::updateProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
     //ui->pushButton_download->setText(QString("%1%").arg(bytesReceived*100/bytesTotal));
-    float p=(float)bytesReceived/bytesTotal;
+    float p = (float)bytesReceived/bytesTotal;
     ui->pushButton_download->setStyleSheet(QString("background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0,"
                                                    "stop:0 rgba(48, 194, 124, 255), stop:%1 rgba(48, 194, 124, 255),"
                                                    "stop:%2 rgba(255, 255, 255, 255), stop:1 rgba(255, 255, 255, 255));")
                                       .arg(p-0.001)
                                       .arg(p));
-    qDebug() << p <<ui->pushButton_download->styleSheet();
+    qDebug() << p << ui->pushButton_download->styleSheet();
 }
 
 void MainWindow::on_pushButton_pageLast_clicked()
