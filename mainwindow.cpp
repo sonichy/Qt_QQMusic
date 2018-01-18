@@ -77,11 +77,12 @@ MainWindow::MainWindow(QWidget *parent) :
     desktopLyric = new Form;
     QString slx = readSettings(QDir::currentPath() + "/config.ini", "LyricX");
     QString sly = readSettings(QDir::currentPath() + "/config.ini", "LyricY");
-    if(slx=="" || sly==""){
-        desktopLyric->move((QApplication::desktop()->width()-desktopLyric->width())/2, y() + height() + 30);
+    if(slx=="" || sly=="" || slx.toInt()>QApplication::desktop()->width() || sly.toInt()>QApplication::desktop()->height()){
+        desktopLyric->move((QApplication::desktop()->width()-desktopLyric->width())/2, QApplication::desktop()->height()-desktopLyric->height());
     }else{
         desktopLyric->move(slx.toInt(),sly.toInt());
     }
+    qDebug() << "歌词坐标" << slx << sly;
     QColor color(readSettings(QDir::currentPath() + "/config.ini", "LyricFontColor"));
     QPalette plt;
     plt.setColor(QPalette::WindowText, color);
@@ -400,6 +401,9 @@ void MainWindow::on_pushButton_pageNext_clicked()
 void MainWindow::on_pushButton_lyric_clicked()
 {
     if(desktopLyric->isHidden()){
+        if(desktopLyric->x()>QApplication::desktop()->width() || desktopLyric->y()>QApplication::desktop()->height()){
+            desktopLyric->move((QApplication::desktop()->width()-desktopLyric->width())/2, QApplication::desktop()->height()-desktopLyric->height());
+        }
         desktopLyric->show();
     }else{
         desktopLyric->hide();
