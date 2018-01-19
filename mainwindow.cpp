@@ -29,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    label_cover = new QLabel;    
+    label_cover->setWindowFlags(Qt::Dialog);
     ui->textBrowser->zoomIn(2);
     ui->pushButton_skipb->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
     ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
@@ -216,8 +218,10 @@ void MainWindow::playSong(int r, int c)
     ui->slider_progress->setMaximum(player->duration());
     // 专辑封面
     QNetworkAccessManager *NAMAlbumCover = new QNetworkAccessManager;
-    QString album_cover_small = QString("https://y.gtimg.cn/music/photo_new/T002R150x150M000%1.jpg").arg(ui->tableWidget->item(r,3)->text());
-    NAMAlbumCover->get(QNetworkRequest(album_cover_small));
+    QString albumID = ui->tableWidget->item(r,3)->text();
+    QString album_cover = QString("https://y.gtimg.cn/music/photo_new/T002R500x500M000%1.jpg").arg(albumID);
+    //QString albumpic = QString("http://imgcache.qq.com/music/photo/album/{albumid%100}/albumpic_{albumid}_0.jpg");
+    NAMAlbumCover->get(QNetworkRequest(album_cover));
     connect(NAMAlbumCover, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAlbumPixmap(QNetworkReply*)));
     // 歌词
     ui->textBrowser->setText("");
@@ -506,10 +510,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 void MainWindow::replyAlbumPixmap(QNetworkReply *reply)
-{
-    QPixmap pixmap;
-    pixmap.loadFromData(reply->readAll());
-    ui->label_cover->setPixmap(pixmap.scaled(70,70));
+{    
+    pixmap_cover.loadFromData(reply->readAll());    
+    ui->pushButton_cover->setIcon(QIcon(pixmap_cover));
 }
 
 void MainWindow::replyLyrics(QNetworkReply *reply)
@@ -548,4 +551,13 @@ void MainWindow::chooseDownloadPath()
         LEDP->setText(downloadPath);
         writeSettings(QDir::currentPath() + "/config.ini", "DownloadPath", downloadPath);
     }
+}
+
+void MainWindow::on_pushButton_cover_clicked()
+{
+    label_cover->setWindowTitle(ui->label_SongSinger->text());
+    label_cover->resize(pixmap_cover.size());
+    label_cover->setPixmap(pixmap_cover);
+    label_cover->move((QApplication::desktop()->width()-label_cover->width())/2,(QApplication::desktop()->height()-label_cover->height())/2);
+    label_cover->show();
 }

@@ -4,7 +4,9 @@
 左侧的列表没有功能，千万别当真。
 ### 参考
 UI：QQ音乐  
-API：[https://github.com/deepins/qq-music-api](https://github.com/deepins/qq-music-api)
+API：  
+[https://github.com/deepins/qq-music-api](https://github.com/deepins/qq-music-api)  
+https://www.cnblogs.com/SoraAoi/p/3311771.html
 
 ### V2.1
 * 增加修改桌面歌词颜色和字体。

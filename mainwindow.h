@@ -27,11 +27,12 @@ private:
     QNetworkAccessManager *NAM;
     QString key,downloadPath;
     QMediaPlayer *player;
-    QLabel *label_lyric;
+    QLabel *label_lyric,*label_cover;
     Form *desktopLyric;
     QDialog *dialog_settings;
     QLineEdit *LEDP;
     QPushButton *pushButton_fontcolor;
+    QPixmap pixmap_cover;
     int page;
     struct Lyric{
         QTime time;
@@ -52,6 +53,7 @@ private slots:
     void on_pushButton_play_clicked();
     void on_pushButton_skipf_clicked();
     void on_pushButton_skipb_clicked();
+    void on_pushButton_cover_clicked();
     void on_pushButton_lyric_clicked();
     void on_pushButton_download_clicked();
     void initSearch();
