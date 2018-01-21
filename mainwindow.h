@@ -42,7 +42,7 @@ private:
     void getKey();
     QString readSettings(QString path, QString key);
     void writeSettings(QString path, QString key, QString value);
-    void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event);    
 
 private slots:
     void on_action_directory_triggered();
@@ -56,6 +56,7 @@ private slots:
     void on_pushButton_cover_clicked();
     void on_pushButton_lyric_clicked();
     void on_pushButton_download_clicked();
+    void on_pushButton_fullscreen_clicked();
     void initSearch();
     void search();
     void copy(int,int);
@@ -71,6 +72,8 @@ private slots:
     void chooseDownloadPath();
     void replyAlbumPixmap(QNetworkReply *reply);
     void replyLyrics(QNetworkReply *reply);
+    void enterFullscreen();
+    void exitFullscreen();
 };
 
 #endif // MAINWINDOW_H

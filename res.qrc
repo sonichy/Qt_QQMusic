@@ -13,5 +13,6 @@
         <file>trolley.png</file>
         <file>download.png</file>
         <file>set.png</file>
+        <file>fullscreen.png</file>
     </qresource>
 </RCC>

@@ -23,12 +23,14 @@
 #include <QFileDialog>
 #include <QClipboard>
 #include <QTextBlock>
+#include <QShortcut>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(new QShortcut(QKeySequence(Qt::Key_Escape),this), SIGNAL(activated()),this, SLOT(exitFullscreen()));
     label_cover = new QLabel;    
     label_cover->setWindowFlags(Qt::Dialog);
     ui->textBrowser->zoomIn(2);
@@ -523,7 +525,7 @@ void MainWindow::replyLyrics(QNetworkReply *reply)
         ui->textBrowser->setText(BAReply);
     }else{
         QString lrc = QTextCodec::codecForName("GBK")->toUnicode(BAReply);
-        lrc = lrc.mid(lrc.indexOf("<![CDATA[")+9, lrc.indexOf("]]>")-lrc.indexOf("<![CDATA[")-9);
+        lrc = lrc.mid(lrc.indexOf("<![CDATA[")+9, lrc.indexOf("]]>")-lrc.indexOf("<![CDATA[")-9).replace("&apos;","'");
         QStringList line = lrc.split("\n");
         for(int i=0;i<line.size();i++){
             if(line.at(i).contains("]") && !line.at(i).contains("ti:") && !line.at(i).contains("ar:") && !line.at(i).contains("al:") && !line.at(i).contains("by:") && !line.at(i).contains("offset:")){
@@ -560,4 +562,42 @@ void MainWindow::on_pushButton_cover_clicked()
     label_cover->setPixmap(pixmap_cover);
     label_cover->move((QApplication::desktop()->width()-label_cover->width())/2,(QApplication::desktop()->height()-label_cover->height())/2);
     label_cover->show();
+}
+
+void MainWindow::on_pushButton_fullscreen_clicked()
+{
+    if(isFullScreen()){
+        exitFullscreen();
+    }else{
+        enterFullscreen();
+    }
+}
+
+void MainWindow::enterFullscreen()
+{
+    showFullScreen();
+    setStyleSheet("background:black;");
+    ui->menuBar->hide();
+    ui->navPanel->hide();
+    ui->searchBar->hide();
+    ui->tableWidget->hide();
+    ui->pushButton_cover->hide();
+    QPalette palette;
+    palette.setBrush(ui->textBrowser->backgroundRole(),QBrush(pixmap_cover));
+    ui->textBrowser->setAutoFillBackground(true);
+    ui->textBrowser->setPalette(palette);
+
+}
+
+void MainWindow::exitFullscreen()
+{
+    if(isFullScreen()){
+        showNormal();
+        setStyleSheet("");
+        ui->menuBar->show();
+        ui->navPanel->show();
+        ui->searchBar->show();
+        ui->tableWidget->show();
+        ui->pushButton_cover->show();
+    }
 }

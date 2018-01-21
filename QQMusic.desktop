@@ -2,7 +2,7 @@
 Name=QQMusic
 Comment=
 Exec=/media/sonichy/job/HY/Linux/Qt/QQMusic/QQMusic
-Icon=/media/sonichy/job/HY/Linux/Qt/QQMusic/icon.ico
+Icon=/media/sonichy/job/HY/Linux/Qt/QQMusic/icon.png
 Path=/media/sonichy/job/HY/Linux/Qt/QQMusic
 Terminal=false
 Type=Application
