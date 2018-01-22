@@ -86,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }else{
         desktopLyric->move(slx.toInt(),sly.toInt());
     }
-    qDebug() << "歌词坐标" << slx << sly;
+    //qDebug() << "歌词坐标" << slx << sly;
     QColor color(readSettings(QDir::currentPath() + "/config.ini", "LyricFontColor"));
     QPalette plt;
     plt.setColor(QPalette::WindowText, color);
@@ -300,18 +300,23 @@ void MainWindow::positionChange(qint64 p)
             hl=j;
         }
     }
-    for(int a=0;a<lyrics.size();a++){
+    for(int a=0; a<lyrics.size(); a++){
         QTextCursor cursor(ui->textBrowser->document()->findBlockByLineNumber(a));
         QTextBlockFormat TBF = cursor.blockFormat();
         TBF.setForeground(QBrush(Qt::black));
-        TBF.setBackground(QBrush(Qt::transparent));
+        //TBF.setBackground(QBrush(Qt::transparent));
+        TBF.clearBackground();
         cursor.setBlockFormat(TBF);
     }
     if(lyrics.size()>0){
         QTextCursor cursor1(ui->textBrowser->document()->findBlockByLineNumber(hl));
         QTextBlockFormat TBF1 = cursor1.blockFormat();
         TBF1.setForeground(QBrush(Qt::green));
-        TBF1.setBackground(QBrush(Qt::yellow));
+        if(isFullScreen()){
+            TBF1.setBackground(QBrush(QColor(255,255,255,80)));
+        }else{
+            TBF1.setBackground(QBrush(Qt::yellow));
+        }
         cursor1.setBlockFormat(TBF1);
         ui->textBrowser->setTextCursor(cursor1);
     }
@@ -515,6 +520,7 @@ void MainWindow::replyAlbumPixmap(QNetworkReply *reply)
 {    
     pixmap_cover.loadFromData(reply->readAll());    
     ui->pushButton_cover->setIcon(QIcon(pixmap_cover));
+    pixmap_cover.save(QDir::currentPath() + "/cover.jpg");
 }
 
 void MainWindow::replyLyrics(QNetworkReply *reply)
@@ -575,18 +581,15 @@ void MainWindow::on_pushButton_fullscreen_clicked()
 
 void MainWindow::enterFullscreen()
 {
-    showFullScreen();
-    setStyleSheet("background:black;");
+    showFullScreen();    
+    setStyleSheet("background-color:black;");
+    ui->textBrowser->setStyleSheet("border-image:url(cover.jpg); text-align:center;");
+    ui->textBrowser->zoomIn(40);
     ui->menuBar->hide();
     ui->navPanel->hide();
     ui->searchBar->hide();
     ui->tableWidget->hide();
     ui->pushButton_cover->hide();
-    QPalette palette;
-    palette.setBrush(ui->textBrowser->backgroundRole(),QBrush(pixmap_cover));
-    ui->textBrowser->setAutoFillBackground(true);
-    ui->textBrowser->setPalette(palette);
-
 }
 
 void MainWindow::exitFullscreen()
@@ -594,6 +597,8 @@ void MainWindow::exitFullscreen()
     if(isFullScreen()){
         showNormal();
         setStyleSheet("");
+        ui->textBrowser->setStyleSheet("");
+        ui->textBrowser->zoomOut(40);
         ui->menuBar->show();
         ui->navPanel->show();
         ui->searchBar->show();
