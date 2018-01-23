@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(new QShortcut(QKeySequence(Qt::Key_Escape),this), SIGNAL(activated()),this, SLOT(exitFullscreen()));
+    connect(new QShortcut(QKeySequence(Qt::Key_Space),this), SIGNAL(activated()),this, SLOT(on_pushButton_play_clicked()));
     label_cover = new QLabel;    
     label_cover->setWindowFlags(Qt::Dialog);
     ui->textBrowser->zoomIn(2);
@@ -130,7 +131,7 @@ void MainWindow::on_action_about_triggered()
     QFont font;
     font.setPointSize(12);
     label->setFont(font);
-    label->setText("QQ音乐 V2.1");
+    label->setText("QQ音乐 V2.2");
     label->setAlignment(Qt::AlignCenter);
     vbox->addWidget(label);
     label=new QLabel;    
@@ -583,7 +584,10 @@ void MainWindow::enterFullscreen()
 {
     showFullScreen();    
     setStyleSheet("background-color:black;");
-    ui->textBrowser->setStyleSheet("border-image:url(cover.jpg); text-align:center;");
+    ui->textBrowser->setStyleSheet("border-image:url(cover.jpg);");
+    ui->textBrowser->selectAll();
+    ui->textBrowser->setAlignment(Qt::AlignCenter);
+    ui->textBrowser->moveCursor(QTextCursor::Start,QTextCursor::MoveAnchor);
     ui->textBrowser->zoomIn(40);
     ui->menuBar->hide();
     ui->navPanel->hide();
@@ -598,6 +602,9 @@ void MainWindow::exitFullscreen()
         showNormal();
         setStyleSheet("");
         ui->textBrowser->setStyleSheet("");
+        ui->textBrowser->selectAll();
+        ui->textBrowser->setAlignment(Qt::AlignLeft);
+        ui->textBrowser->moveCursor(QTextCursor::Start,QTextCursor::MoveAnchor);
         ui->textBrowser->zoomOut(40);
         ui->menuBar->show();
         ui->navPanel->show();
