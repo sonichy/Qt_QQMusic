@@ -170,7 +170,7 @@ void MainWindow::search()
         json = QJsonDocument::fromJson(responseText);
         list = json.object().value("data").toObject().value("song").toObject().value("list").toArray();        
         ui->tableWidget->setRowCount(0);
-        for(int i=0;i<list.size();i++){
+        for(int i=0; i<list.size(); i++){
             ui->tableWidget->insertRow(i);
             ui->tableWidget->setItem(i,0,new QTableWidgetItem(list[i].toObject().value("songname").toString()));
             ui->tableWidget->setItem(i,1,new QTableWidgetItem(list[i].toObject().value("singer").toArray()[0].toObject().value("name").toString()));
@@ -536,9 +536,9 @@ void MainWindow::replyLyrics(QNetworkReply *reply)
         QStringList line = lrc.split("\n");
         for(int i=0;i<line.size();i++){
             if(line.at(i).contains("]") && !line.at(i).contains("ti:") && !line.at(i).contains("ar:") && !line.at(i).contains("al:") && !line.at(i).contains("by:") && !line.at(i).contains("offset:")){
-                QStringList strlist=line.at(i).split("]");
+                QStringList strlist = line.at(i).split("]");
                 Lyric lyric;
-                lyric.time = QTime::fromString(strlist.at(0).mid(1,8)+"0","mm:ss.zzz");
+                lyric.time = QTime::fromString(strlist.at(0).mid(1,8) + "0", "mm:ss.zzz");
                 lyric.sentence = strlist.at(1);
                 lyrics.append(lyric);
             }
@@ -584,7 +584,7 @@ void MainWindow::enterFullscreen()
 {
     showFullScreen();    
     setStyleSheet("background-color:black;");
-    ui->textBrowser->setStyleSheet("border-image:url(cover.jpg);");
+    ui->textBrowser->setStyleSheet("QTextBrowser{border-image:url(cover.jpg);}");
     ui->textBrowser->selectAll();
     ui->textBrowser->setAlignment(Qt::AlignCenter);
     ui->textBrowser->moveCursor(QTextCursor::Start,QTextCursor::MoveAnchor);
