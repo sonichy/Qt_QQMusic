@@ -116,74 +116,17 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label">
-             <property name="styleSheet">
-              <string notr="true">margin:0 10px;</string>
-             </property>
-             <property name="text">
-              <string>在线音乐</string>
-             </property>
-             <property name="margin">
-              <number>14</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QListWidget" name="listWidget_online">
+            <widget class="QListWidget" name="listWidget">
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>100</height>
+               <height>320</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>100</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Plain</enum>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>20</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="spacing">
-              <number>0</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_2">
-             <property name="styleSheet">
-              <string notr="true">margin:0 10px;</string>
-             </property>
-             <property name="text">
-              <string>我的音乐</string>
-             </property>
-             <property name="margin">
-              <number>14</number>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QListWidget" name="listWidget_mine">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>160</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>160</height>
+               <height>320</height>
               </size>
              </property>
              <property name="frameShape">
@@ -787,8 +730,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
   <tabstop>pushButton_play</tabstop>
   <tabstop>pushButton_skipf</tabstop>
   <tabstop>pushButton_avantar</tabstop>
-  <tabstop>listWidget_online</tabstop>
-  <tabstop>listWidget_mine</tabstop>
+  <tabstop>listWidget</tabstop>
   <tabstop>pushButton_login</tabstop>
   <tabstop>tableWidget</tabstop>
   <tabstop>slider_progress</tabstop>

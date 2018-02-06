@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    sstyle = styleSheet();
     connect(new QShortcut(QKeySequence(Qt::Key_Escape),this), SIGNAL(activated()),this, SLOT(exitFullscreen()));
     connect(new QShortcut(QKeySequence(Qt::Key_Space),this), SIGNAL(activated()),this, SLOT(on_pushButton_play_clicked()));
     label_cover = new QLabel;    
@@ -57,51 +58,56 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(player,SIGNAL(stateChanged(QMediaPlayer::State)),this,SLOT(stateChange(QMediaPlayer::State)));
     connect(ui->slider_progress,SIGNAL(valueChanged(int)),this,SLOT(setSTime(int)));
     connect(ui->slider_progress,SIGNAL(sliderReleased()),this,SLOT(setMPPosition()));
-    QListWidgetItem *LWI1,*LWI2,*LWI3,*LWI4,*LWI5;
-    LWI1 = new QListWidgetItem(QIcon(":/qqmusic.png"), "音乐馆");
-    LWI2 = new QListWidgetItem(QIcon(":/video.png"), "MV");
-    LWI3 = new QListWidgetItem(QIcon(":/radio.png"), "电台");
-    ui->listWidget_online->insertItem(1, LWI1);
-    ui->listWidget_online->insertItem(2, LWI2);
-    ui->listWidget_online->insertItem(3, LWI3);
-    //connect(ui->listViewNav,SIGNAL(clicked(QModelIndex)),this,SLOT(nav(QModelIndex)));
-    LWI1 = new QListWidgetItem(QIcon(":/heart.png"), "我喜欢");
-    LWI2 = new QListWidgetItem(QIcon(":/computer.png"), "本地和下载");
-    LWI3 = new QListWidgetItem(QIcon(":/history.png"), "播放历史");
-    LWI4 = new QListWidgetItem(QIcon(":/LTL.png"), "试听列表");
-    LWI5 = new QListWidgetItem(QIcon(":/trolley.png"), "已购音乐");
-    ui->listWidget_mine->insertItem(1, LWI1);
-    ui->listWidget_mine->insertItem(2, LWI2);
-    ui->listWidget_mine->insertItem(3, LWI3);
-    ui->listWidget_mine->insertItem(4, LWI4);
-    ui->listWidget_mine->insertItem(5, LWI5);
+    QListWidgetItem *LWI;
+    LWI = new QListWidgetItem("在线音乐");
+    LWI->setFlags(Qt::NoItemFlags);
+    ui->listWidget->insertItem(0, LWI);
+    LWI = new QListWidgetItem(QIcon(":/qqmusic.png"), "音乐馆");
+    ui->listWidget->insertItem(1, LWI);
+    LWI = new QListWidgetItem(QIcon(":/video.png"), "MV");
+    ui->listWidget->insertItem(2, LWI);
+    LWI = new QListWidgetItem(QIcon(":/radio.png"), "电台");
+    ui->listWidget->insertItem(3, LWI);
+    LWI = new QListWidgetItem("我的音乐");
+    LWI->setFlags(Qt::NoItemFlags);
+    ui->listWidget->insertItem(4, LWI);
+    LWI = new QListWidgetItem(QIcon(":/heart.png"), "我喜欢");
+    ui->listWidget->insertItem(5, LWI);
+    LWI = new QListWidgetItem(QIcon(":/computer.png"), "本地和下载");
+    ui->listWidget->insertItem(6, LWI);
+    LWI = new QListWidgetItem(QIcon(":/history.png"), "播放历史");
+    ui->listWidget->insertItem(7, LWI);
+    LWI = new QListWidgetItem(QIcon(":/LTL.png"), "试听列表");
+    ui->listWidget->insertItem(8, LWI);
+    LWI = new QListWidgetItem(QIcon(":/trolley.png"), "已购音乐");
+    ui->listWidget->insertItem(9, LWI);
     downloadPath = QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first();
     NAM = new QNetworkAccessManager;
     getKey();
 
     desktopLyric = new Form;
-    QString slx = readSettings(QDir::currentPath() + "/config.ini", "LyricX");
-    QString sly = readSettings(QDir::currentPath() + "/config.ini", "LyricY");
+    QString slx = readSettings(QDir::currentPath() + "/config.ini", "config", "LyricX");
+    QString sly = readSettings(QDir::currentPath() + "/config.ini", "config", "LyricY");
     if(slx=="" || sly=="" || slx.toInt()>QApplication::desktop()->width() || sly.toInt()>QApplication::desktop()->height()){
         desktopLyric->move((QApplication::desktop()->width()-desktopLyric->width())/2, QApplication::desktop()->height()-desktopLyric->height());
     }else{
         desktopLyric->move(slx.toInt(),sly.toInt());
     }
     //qDebug() << "歌词坐标" << slx << sly;
-    QColor color(readSettings(QDir::currentPath() + "/config.ini", "LyricFontColor"));
+    QColor color(readSettings(QDir::currentPath() + "/config.ini", "config", "LyricFontColor"));
     QPalette plt;
     plt.setColor(QPalette::WindowText, color);
     desktopLyric->ui->label_lyric->setPalette(plt);
-    QString sfont = readSettings(QDir::currentPath() + "/config.ini", "Font");
+    QString sfont = readSettings(QDir::currentPath() + "/config.ini", "config", "Font");
     if(sfont!=""){
         QStringList SLFont = sfont.split(",");
         desktopLyric->ui->label_lyric->setFont(QFont(SLFont.at(0),SLFont.at(1).toInt(),SLFont.at(2).toInt(),SLFont.at(3).toInt()));
     }
     connect(desktopLyric, SIGNAL(pushButton_lyric_toggle()), ui->pushButton_lyric, SLOT(toggle()));
-    connect(desktopLyric, SIGNAL(pull_settings()), this, SLOT(on_action_settings_triggered()));
+    connect(desktopLyric->ui->pushButton_set, SIGNAL(pressed()), this, SLOT(on_action_settings_triggered()));
     desktopLyric->show();
 
-    downloadPath = readSettings(QDir::currentPath() + "/config.ini", "DownloadPath");
+    downloadPath = readSettings(QDir::currentPath() + "/config.ini", "config", "DownloadPath");
     if(downloadPath==""){
         downloadPath = QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first();
     }
@@ -273,9 +279,9 @@ void MainWindow::positionChange(qint64 p)
     // 歌词选行
     int hl;
     QTime t(0,0,0);
-    t=t.addMSecs(p);
+    t = t.addMSecs(p);
     // 非最后一句
-    for(int i=0;i<lyrics.size()-1;i++){
+    for(int i=0; i<lyrics.size()-1; i++){
         //qDebug() << t << lyrics.at(i).time;
         if(t>lyrics.at(i).time && t<lyrics.at(i+1).time){
             if(desktopLyric->isHidden()){
@@ -435,6 +441,7 @@ void MainWindow::on_action_settings_triggered()
     QString sfont = desktopLyric->ui->label_lyric->font().family() + "," + QString::number(desktopLyric->ui->label_lyric->font().pointSize()) + "," + desktopLyric->ui->label_lyric->font().weight() + "," + desktopLyric->ui->label_lyric->font().italic();
     pushButton_font->setText(sfont);
     connect(pushButton_font,SIGNAL(pressed()),this,SLOT(chooseFont()));
+    pushButton_font->setFocusPolicy(Qt::NoFocus);
     hbox->addWidget(pushButton_font);
     pushButton_fontcolor = new QPushButton;
     pushButton_fontcolor->setText("■");
@@ -443,13 +450,14 @@ void MainWindow::on_action_settings_triggered()
     plt.setColor(QPalette::ButtonText, brush.color());
     pushButton_fontcolor->setPalette(plt);
     connect(pushButton_fontcolor,SIGNAL(pressed()),this,SLOT(chooseFontColor()));
+    pushButton_fontcolor->setFocusPolicy(Qt::NoFocus);
     hbox->addWidget(pushButton_fontcolor);
     vbox->addLayout(hbox);
     hbox = new QHBoxLayout;
     label = new QLabel("保存路径");
     hbox->addWidget(label);
     LEDP = new QLineEdit;
-    downloadPath = readSettings(QDir::currentPath() + "/config.ini", "DownloadPath");
+    downloadPath = readSettings(QDir::currentPath() + "/config.ini", "config", "DownloadPath");
     if(downloadPath==""){
         LEDP->setText(QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first());
     }else{
@@ -458,6 +466,7 @@ void MainWindow::on_action_settings_triggered()
     hbox->addWidget(LEDP);
     QPushButton *pushButton_downloadPath = new QPushButton("选择路径");
     connect(pushButton_downloadPath,SIGNAL(pressed()),this,SLOT(chooseDownloadPath()));
+    pushButton_downloadPath->setFocusPolicy(Qt::NoFocus);
     hbox->addWidget(pushButton_downloadPath);
     vbox->addLayout(hbox);
     dialog_settings->setLayout(vbox);
@@ -472,7 +481,7 @@ void MainWindow::chooseFont()
     if(ok){
        desktopLyric->ui->label_lyric->setFont(font);
        QString sfont = font.family() + "," + QString::number(font.pointSize()) + "," + font.weight() + "," + font.italic();
-       writeSettings(QDir::currentPath() + "/config.ini", "Font", sfont);
+       writeSettings(QDir::currentPath() + "/config.ini", "config", "Font", sfont);
        desktopLyric->ui->label_lyric->adjustSize();
        qDebug() << "label_after" << desktopLyric->ui->label_lyric->size();
        desktopLyric->resize(desktopLyric->ui->label_lyric->size());
@@ -490,22 +499,22 @@ void MainWindow::chooseFontColor()
         desktopLyric->ui->label_lyric->setPalette(plt);
         plt.setColor(QPalette::ButtonText, color);
         pushButton_fontcolor->setPalette(plt);
-        writeSettings(QDir::currentPath() + "/config.ini", "LyricFontColor", color.name());
+        writeSettings(QDir::currentPath() + "/config.ini", "config", "LyricFontColor", color.name());
     }
 }
 
-QString MainWindow::readSettings(QString path, QString key)
+QString MainWindow::readSettings(QString path, QString group, QString key)
 {
     QSettings setting(path, QSettings::IniFormat);
-    setting.beginGroup("config");
+    setting.beginGroup(group);
     QString value = setting.value(key).toString();
     return value;
 }
 
-void MainWindow::writeSettings(QString path, QString key, QString value)
+void MainWindow::writeSettings(QString path, QString group, QString key, QString value)
 {
     QSettings *config = new QSettings(path, QSettings::IniFormat);
-    config->beginGroup("config");
+    config->beginGroup(group);
     config->setValue(key, value);
     config->endGroup();
 }
@@ -558,7 +567,7 @@ void MainWindow::chooseDownloadPath()
     downloadPath = QFileDialog::getExistingDirectory(dialog_settings,"保存路径",downloadPath, QFileDialog::ShowDirsOnly |QFileDialog::DontResolveSymlinks);
     if(downloadPath != ""){
         LEDP->setText(downloadPath);
-        writeSettings(QDir::currentPath() + "/config.ini", "DownloadPath", downloadPath);
+        writeSettings(QDir::currentPath() + "/config.ini", "config", "DownloadPath", downloadPath);
     }
 }
 
@@ -600,7 +609,7 @@ void MainWindow::exitFullscreen()
 {
     if(isFullScreen()){
         showNormal();
-        setStyleSheet("");
+        setStyleSheet(sstyle);
         ui->textBrowser->setStyleSheet("");
         ui->textBrowser->selectAll();
         ui->textBrowser->setAlignment(Qt::AlignLeft);

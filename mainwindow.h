@@ -25,7 +25,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QNetworkAccessManager *NAM;
-    QString key,downloadPath;
+    QString key, downloadPath, sstyle;
     QMediaPlayer *player;
     QLabel *label_lyric,*label_cover;
     Form *desktopLyric;
@@ -40,8 +40,8 @@ private:
     };
     QList<Lyric> lyrics;
     void getKey();
-    QString readSettings(QString path, QString key);
-    void writeSettings(QString path, QString key, QString value);
+    QString readSettings(QString path,QString group, QString key);
+    void writeSettings(QString path, QString group, QString key, QString value);
     void closeEvent(QCloseEvent *event);    
 
 private slots:

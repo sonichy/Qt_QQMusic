@@ -29,11 +29,11 @@ private:
 
 signals:
     void pushButton_lyric_toggle();
-    void pull_settings();
+    //void pull_settings();
 
 private slots:
     void on_pushButton_close_clicked();
-    void on_pushButton_set_clicked();
+    //void on_pushButton_set_clicked();
 };
 
 #endif // FORM_H

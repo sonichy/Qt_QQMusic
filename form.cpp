@@ -26,8 +26,7 @@ Form::~Form()
 
 void Form::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton)
-    {
+    if (event->button() == Qt::LeftButton) {
         m_bPressed = true;
         m_point = event->pos();
     }
@@ -85,7 +84,7 @@ void Form::on_pushButton_close_clicked()
     emit pushButton_lyric_toggle();
 }
 
-void Form::on_pushButton_set_clicked()
-{
-    emit pull_settings();
-}
+//void Form::on_pushButton_set_clicked()
+//{
+//    emit pull_settings();
+//}
