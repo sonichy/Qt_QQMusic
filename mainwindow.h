@@ -30,7 +30,7 @@ private:
     QLabel *label_lyric,*label_cover;
     Form *desktopLyric;
     QDialog *dialog_settings;
-    QLineEdit *LEDP;
+    QLineEdit *lineEditDownloadPath;
     QPushButton *pushButton_fontcolor;
     QPixmap pixmap_cover;
     int page;

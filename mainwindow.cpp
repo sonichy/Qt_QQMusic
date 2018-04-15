@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    move((QApplication::desktop()->width()-width())/2,(QApplication::desktop()->height()-height())/2);
     sstyle = styleSheet();
     connect(new QShortcut(QKeySequence(Qt::Key_Escape),this), SIGNAL(activated()),this, SLOT(exitFullscreen()));
     connect(new QShortcut(QKeySequence(Qt::Key_Space),this), SIGNAL(activated()),this, SLOT(on_pushButton_play_clicked()));
@@ -42,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pushButton_pageLast->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
     ui->pushButton_pageNext->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
     ui->lineEdit_page->setValidator(new QIntValidator(1,50));
-    move((QApplication::desktop()->width()-width())/2,(QApplication::desktop()->height()-height())/2);
+
     connect(ui->lineEdit_search,SIGNAL(returnPressed()),this,SLOT(initSearch()));
     connect(ui->lineEdit_page,SIGNAL(returnPressed()),this,SLOT(search()));
     ui->tableWidget->setColumnHidden(2,true);
@@ -88,9 +89,9 @@ MainWindow::MainWindow(QWidget *parent) :
     desktopLyric = new Form;
     QString slx = readSettings(QDir::currentPath() + "/config.ini", "config", "LyricX");
     QString sly = readSettings(QDir::currentPath() + "/config.ini", "config", "LyricY");
-    if(slx=="" || sly=="" || slx.toInt()>QApplication::desktop()->width() || sly.toInt()>QApplication::desktop()->height()){
+    if (slx=="" || sly=="" || slx.toInt()>QApplication::desktop()->width() || sly.toInt()>QApplication::desktop()->height()) {
         desktopLyric->move((QApplication::desktop()->width()-desktopLyric->width())/2, QApplication::desktop()->height()-desktopLyric->height());
-    }else{
+    } else {
         desktopLyric->move(slx.toInt(),sly.toInt());
     }
     //qDebug() << "歌词坐标" << slx << sly;
@@ -99,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
     plt.setColor(QPalette::WindowText, color);
     desktopLyric->ui->label_lyric->setPalette(plt);
     QString sfont = readSettings(QDir::currentPath() + "/config.ini", "config", "Font");
-    if(sfont!=""){
+    if (sfont != "") {
         QStringList SLFont = sfont.split(",");
         desktopLyric->ui->label_lyric->setFont(QFont(SLFont.at(0),SLFont.at(1).toInt(),SLFont.at(2).toInt(),SLFont.at(3).toInt()));
     }
@@ -108,7 +109,7 @@ MainWindow::MainWindow(QWidget *parent) :
     desktopLyric->show();
 
     downloadPath = readSettings(QDir::currentPath() + "/config.ini", "config", "DownloadPath");
-    if(downloadPath==""){
+    if (downloadPath == "") {
         downloadPath = QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first();
     }
 }
@@ -125,22 +126,22 @@ void MainWindow::on_action_directory_triggered()
 
 void MainWindow::on_action_about_triggered()
 {
-    QDialog *dialog=new QDialog(this);
+    QDialog *dialog = new QDialog(this);
     dialog->setWindowTitle("关于");
     dialog->setFixedSize(500,360);
-    QVBoxLayout *vbox=new QVBoxLayout;
-    QLabel *label=new QLabel;
+    QVBoxLayout *vbox = new QVBoxLayout;
+    QLabel *label = new QLabel;
     label->setPixmap(QPixmap("logo.png"));
     label->setAlignment(Qt::AlignCenter);
     vbox->addWidget(label);
-    label=new QLabel;
+    label = new QLabel;
     QFont font;
     font.setPointSize(12);
     label->setFont(font);
     label->setText("QQ音乐 V2.2");
     label->setAlignment(Qt::AlignCenter);
     vbox->addWidget(label);
-    label=new QLabel;    
+    label = new QLabel;
     //font.setPointSize(12);
     label->setFont(font);
     label->setText("         一款基于Qt的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考:\nUI：QQ音乐\nAPI：https://github.com/deepins/qq-music-api");
@@ -160,7 +161,7 @@ void MainWindow::initSearch()
 void MainWindow::search()
 {
     QString word = ui->lineEdit_search->text();    
-    if(word!=""){
+    if (word != "") {
         qDebug() << word;
         QString surl = "http://c.y.qq.com/soso/fcgi-bin/client_search_cp?t=0&aggr=1&lossless=1&cr=1&catZhida=1&format=json&p=" + ui->lineEdit_page->text() + "&n=20&w=" + word;
         qDebug() <<  surl;
@@ -176,7 +177,7 @@ void MainWindow::search()
         json = QJsonDocument::fromJson(responseText);
         list = json.object().value("data").toObject().value("song").toObject().value("list").toArray();        
         ui->tableWidget->setRowCount(0);
-        for(int i=0; i<list.size(); i++){
+        for (int i=0; i<list.size(); i++) {
             ui->tableWidget->insertRow(i);
             ui->tableWidget->setItem(i,0,new QTableWidgetItem(list[i].toObject().value("songname").toString()));
             ui->tableWidget->setItem(i,1,new QTableWidgetItem(list[i].toObject().value("singer").toArray()[0].toObject().value("name").toString()));
@@ -219,7 +220,7 @@ void MainWindow::playSong(int r, int c)
     Q_UNUSED(c);
     ui->pushButton_download->setStyleSheet("");
     ui->label_SongSinger->setText(ui->tableWidget->item(r,0)->text() + " - " + ui->tableWidget->item(r,1)->text());
-    QString surl=ui->tableWidget->item(r,2)->text();
+    QString surl = ui->tableWidget->item(r,2)->text();
     qDebug() << surl;
     player->setMedia(QUrl(surl));
     player->play();
@@ -244,13 +245,13 @@ void MainWindow::playSong(int r, int c)
 
 void MainWindow::on_pushButton_play_clicked()
 {
-    if(player->state()==QMediaPlayer::PlayingState){
+    if (player->state() == QMediaPlayer::PlayingState) {
         player->pause();
         ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-    }else if(player->state()==QMediaPlayer::PausedState){
+    } else if (player->state() == QMediaPlayer::PausedState) {
         player->play();
         ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-    }else if(player->state()==QMediaPlayer::StoppedState){
+    } else if (player->state() == QMediaPlayer::StoppedState) {
         player->play();
         ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
     }
@@ -258,7 +259,7 @@ void MainWindow::on_pushButton_play_clicked()
 
 void MainWindow::on_pushButton_skipf_clicked()
 {
-    if(ui->tableWidget->currentRow() < ui->tableWidget->rowCount()-1){
+    if (ui->tableWidget->currentRow() < ui->tableWidget->rowCount()-1) {
         ui->tableWidget->setCurrentCell(ui->tableWidget->currentRow()+1,0);
         playSong(ui->tableWidget->currentRow(),0);
     }
@@ -266,7 +267,7 @@ void MainWindow::on_pushButton_skipf_clicked()
 
 void MainWindow::on_pushButton_skipb_clicked()
 {
-    if(ui->tableWidget->currentRow()>0){
+    if (ui->tableWidget->currentRow() > 0) {
         ui->tableWidget->setCurrentCell(ui->tableWidget->currentRow()-1,0);
         playSong(ui->tableWidget->currentRow(),0);
     }
@@ -281,33 +282,33 @@ void MainWindow::positionChange(qint64 p)
     QTime t(0,0,0);
     t = t.addMSecs(p);
     // 非最后一句
-    for(int i=0; i<lyrics.size()-1; i++){
+    for (int i=0; i<lyrics.size()-1; i++) {
         //qDebug() << t << lyrics.at(i).time;
-        if(t>lyrics.at(i).time && t<lyrics.at(i+1).time){
-            if(desktopLyric->isHidden()){
+        if (t>lyrics.at(i).time && t<lyrics.at(i+1).time) {
+            if (desktopLyric->isHidden()) {
                 ui->label_lyric->setText(lyrics.at(i).sentence);
-            }else{
+            } else {
                 ui->label_lyric->setText("");
                 desktopLyric->ui->label_lyric->setText(lyrics.at(i).sentence);
             }            
-            hl=i;
+            hl = i;
             break;
         }
     }
     //最后一句
-    if(lyrics.size()>0){
+    if (lyrics.size()>0) {
         int j = lyrics.size()-1;
-        if(t>lyrics.at(j).time){
-            if(desktopLyric->isHidden()){
+        if (t>lyrics.at(j).time) {
+            if (desktopLyric->isHidden()) {
                 ui->label_lyric->setText(lyrics.at(j).sentence);
-            }else{
+            } else {
                 ui->label_lyric->setText("");
                 desktopLyric->ui->label_lyric->setText(lyrics.at(j).sentence);
             }            
-            hl=j;
+            hl = j;
         }
     }
-    for(int a=0; a<lyrics.size(); a++){
+    for (int a=0; a<lyrics.size(); a++) {
         QTextCursor cursor(ui->textBrowser->document()->findBlockByLineNumber(a));
         QTextBlockFormat TBF = cursor.blockFormat();
         TBF.setForeground(QBrush(Qt::black));
@@ -315,13 +316,13 @@ void MainWindow::positionChange(qint64 p)
         TBF.clearBackground();
         cursor.setBlockFormat(TBF);
     }
-    if(lyrics.size()>0){
+    if (lyrics.size()>0) {
         QTextCursor cursor1(ui->textBrowser->document()->findBlockByLineNumber(hl));
         QTextBlockFormat TBF1 = cursor1.blockFormat();
         TBF1.setForeground(QBrush(Qt::green));
-        if(isFullScreen()){
+        if (isFullScreen()) {
             TBF1.setBackground(QBrush(QColor(255,255,255,80)));
-        }else{
+        } else {
             TBF1.setBackground(QBrush(Qt::yellow));
         }
         cursor1.setBlockFormat(TBF1);
@@ -342,18 +343,18 @@ void MainWindow::setMPPosition()
 void MainWindow::setSTime(int v)
 {
     QTime t(0,0,0);
-    t=t.addMSecs(v);
-    QString sTimeElapse=t.toString("hh:mm:ss");
+    t = t.addMSecs(v);
+    QString sTimeElapse = t.toString("hh:mm:ss");
     t.setHMS(0,0,0);
-    t=t.addMSecs(player->duration());
-    QString sTimeTotal=t.toString("hh:mm:ss");
-    ui->label_time->setText(sTimeElapse+" / "+sTimeTotal);
+    t = t.addMSecs(player->duration());
+    QString sTimeTotal = t.toString("hh:mm:ss");
+    ui->label_time->setText(sTimeElapse + " / " + sTimeTotal);
 }
 
 void MainWindow::stateChange(QMediaPlayer::State state)
 {
     qDebug() << state;   
-    if(state == QMediaPlayer::StoppedState){
+    if (state == QMediaPlayer::StoppedState) {
         ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
 //        if(ui->tableWidget->currentRow() < ui->tableWidget->rowCount()-1){
 //            ui->tableWidget->setCurrentCell(ui->tableWidget->currentRow()+1,0);
@@ -364,10 +365,10 @@ void MainWindow::stateChange(QMediaPlayer::State state)
 
 void MainWindow::on_pushButton_download_clicked()
 {
-    if(ui->tableWidget->currentRow() != -1){
+    if (ui->tableWidget->currentRow() != -1) {
         ui->pushButton_download->setEnabled(false);
         QString surl = ui->tableWidget->item(ui->tableWidget->currentRow(),2)->text();
-        //qDebug() <<  "download -> " + surl;
+        qDebug() <<  "download -> " + surl;
         QUrl url = QString(surl);
         QNetworkRequest request(url);
         QNetworkReply *reply = NAM->get(request);
@@ -401,7 +402,7 @@ void MainWindow::updateProgress(qint64 bytesReceived, qint64 bytesTotal)
 
 void MainWindow::on_pushButton_pageLast_clicked()
 {
-    if(ui->lineEdit_page->text().toInt() > 1){
+    if (ui->lineEdit_page->text().toInt() > 1) {
         page = page - 1;
         ui->lineEdit_page->setText(QString::number(ui->lineEdit_page->text().toInt()-1));
         search();
@@ -410,20 +411,20 @@ void MainWindow::on_pushButton_pageLast_clicked()
 
 void MainWindow::on_pushButton_pageNext_clicked()
 {
-    if(ui->lineEdit_page->text().toInt() < 51){
-        ui->lineEdit_page->setText(QString::number(ui->lineEdit_page->text().toInt()+1));
+    if (ui->lineEdit_page->text().toInt() < 51) {
+        ui->lineEdit_page->setText(QString::number(ui->lineEdit_page->text().toInt() + 1));
         search();
     }
 }
 
 void MainWindow::on_pushButton_lyric_clicked()
 {
-    if(desktopLyric->isHidden()){
-        if(desktopLyric->x()>QApplication::desktop()->width() || desktopLyric->y()>QApplication::desktop()->height()){
+    if (desktopLyric->isHidden()) {
+        if (desktopLyric->x()>QApplication::desktop()->width() || desktopLyric->y()>QApplication::desktop()->height()) {
             desktopLyric->move((QApplication::desktop()->width()-desktopLyric->width())/2, QApplication::desktop()->height()-desktopLyric->height());
         }
         desktopLyric->show();
-    }else{
+    } else {
         desktopLyric->hide();
     }
 }
@@ -447,8 +448,7 @@ void MainWindow::on_action_settings_triggered()
     pushButton_fontcolor->setText("■");
     QPalette plt = desktopLyric->ui->label_lyric->palette();
     QBrush brush = plt.color(QPalette::WindowText);
-    plt.setColor(QPalette::ButtonText, brush.color());
-    pushButton_fontcolor->setPalette(plt);
+    pushButton_fontcolor->setStyleSheet("color:" + brush.color().name());
     connect(pushButton_fontcolor,SIGNAL(pressed()),this,SLOT(chooseFontColor()));
     pushButton_fontcolor->setFocusPolicy(Qt::NoFocus);
     hbox->addWidget(pushButton_fontcolor);
@@ -456,18 +456,22 @@ void MainWindow::on_action_settings_triggered()
     hbox = new QHBoxLayout;
     label = new QLabel("保存路径");
     hbox->addWidget(label);
-    LEDP = new QLineEdit;
+    lineEditDownloadPath = new QLineEdit;
     downloadPath = readSettings(QDir::currentPath() + "/config.ini", "config", "DownloadPath");
     if(downloadPath==""){
-        LEDP->setText(QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first());
+        lineEditDownloadPath->setText(QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first());
     }else{
-        LEDP->setText(downloadPath);
+        lineEditDownloadPath->setText(downloadPath);
     }
-    hbox->addWidget(LEDP);
-    QPushButton *pushButton_downloadPath = new QPushButton("选择路径");
-    connect(pushButton_downloadPath,SIGNAL(pressed()),this,SLOT(chooseDownloadPath()));
-    pushButton_downloadPath->setFocusPolicy(Qt::NoFocus);
-    hbox->addWidget(pushButton_downloadPath);
+    QAction *action_browse = new QAction(this);
+    action_browse->setIcon(style()->standardIcon(QStyle::SP_DirIcon));
+    connect(action_browse,SIGNAL(triggered(bool)),this,SLOT(chooseDownloadPath()));
+    lineEditDownloadPath->addAction(action_browse,QLineEdit::TrailingPosition);
+    hbox->addWidget(lineEditDownloadPath);
+    //QPushButton *pushButton_downloadPath = new QPushButton("选择路径");
+    //connect(pushButton_downloadPath,SIGNAL(pressed()),this,SLOT(chooseDownloadPath()));
+    //pushButton_downloadPath->setFocusPolicy(Qt::NoFocus);
+    //hbox->addWidget(pushButton_downloadPath);
     vbox->addLayout(hbox);
     dialog_settings->setLayout(vbox);
     dialog_settings->show();
@@ -497,8 +501,9 @@ void MainWindow::chooseFontColor()
     if(color.isValid()){
         plt.setColor(QPalette::WindowText, color);
         desktopLyric->ui->label_lyric->setPalette(plt);
-        plt.setColor(QPalette::ButtonText, color);
-        pushButton_fontcolor->setPalette(plt);
+        //plt.setColor(QPalette::ButtonText, color);
+        //pushButton_fontcolor->setPalette(plt);
+        pushButton_fontcolor->setStyleSheet("color:" + color.name());
         writeSettings(QDir::currentPath() + "/config.ini", "config", "LyricFontColor", color.name());
     }
 }
@@ -566,7 +571,7 @@ void MainWindow::chooseDownloadPath()
 {
     downloadPath = QFileDialog::getExistingDirectory(dialog_settings,"保存路径",downloadPath, QFileDialog::ShowDirsOnly |QFileDialog::DontResolveSymlinks);
     if(downloadPath != ""){
-        LEDP->setText(downloadPath);
+        lineEditDownloadPath->setText(downloadPath);
         writeSettings(QDir::currentPath() + "/config.ini", "config", "DownloadPath", downloadPath);
     }
 }
