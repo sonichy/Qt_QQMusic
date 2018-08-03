@@ -25,7 +25,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QNetworkAccessManager *NAM;
-    QString key, downloadPath, sstyle;
+    QString downloadPath, sstyle, guid;
     QMediaPlayer *player;
     QLabel *label_lyric,*label_cover;
     Form *desktopLyric;
@@ -42,7 +42,7 @@ private:
     void getKey();
     QString readSettings(QString path,QString group, QString key);
     void writeSettings(QString path, QString group, QString key, QString value);
-    void closeEvent(QCloseEvent *event);    
+    void closeEvent(QCloseEvent *event);
 
 private slots:
     void on_action_directory_triggered();
