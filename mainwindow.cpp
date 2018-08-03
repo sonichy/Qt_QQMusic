@@ -141,7 +141,7 @@ void MainWindow::on_action_about_triggered()
     QFont font;
     font.setPointSize(12);
     label->setFont(font);
-    label->setText("QQ音乐 V2.2");
+    label->setText("QQ音乐 V2.3");
     label->setAlignment(Qt::AlignCenter);
     vbox->addWidget(label);
     label = new QLabel;
