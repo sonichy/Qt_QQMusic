@@ -176,12 +176,14 @@ void MainWindow::search()
         loop.exec();
         QByteArray BA = reply->readAll();
         //qDebug() << BA;
-        // 写log
+        // 调试：写log
+        /*
         QFile file("search.log");
         if (file.open(QFile::WriteOnly)) {
             file.write(QString(BA).toUtf8());
             file.close();
         }
+        */
 
         QJsonDocument json = QJsonDocument::fromJson(BA);
         QJsonArray list = json.object().value("data").toObject().value("song").toObject().value("list").toArray();
@@ -369,9 +371,9 @@ void MainWindow::on_pushButton_download_clicked()
 {
     if (ui->tableWidget->currentRow() != -1) {
         ui->pushButton_download->setEnabled(false);
-        QString surl = ui->tableWidget->item(ui->tableWidget->currentRow(),2)->text();
+        QUrl url = player->media().canonicalUrl();
+        QString surl = url.toString();
         qDebug() <<  "download -> " + surl;
-        QUrl url = QString(surl);
         QNetworkRequest request(url);
         QNetworkReply *reply = NAM->get(request);
         QEventLoop loop;
@@ -380,7 +382,7 @@ void MainWindow::on_pushButton_download_clicked()
         loop.exec();
         QString filename = ui->tableWidget->item(ui->tableWidget->currentRow(),0)->text() + " - " + ui->tableWidget->item(ui->tableWidget->currentRow(),1)->text() + "." + QFileInfo(surl).suffix().left(QFileInfo(surl).suffix().indexOf("?"));
         QString filepath = downloadPath + "/" + filename;
-        //qDebug() <<  "path -> " + filepath;
+        qDebug() <<  "path -> " + filepath;
         QFile file(filepath);
         file.open(QIODevice::WriteOnly);
         file.write(reply->readAll());
@@ -393,13 +395,13 @@ void MainWindow::on_pushButton_download_clicked()
 void MainWindow::updateProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
     //ui->pushButton_download->setText(QString("%1%").arg(bytesReceived*100/bytesTotal));
-    float p = (float)bytesReceived/bytesTotal;
+    float p = (float) bytesReceived/bytesTotal;
     ui->pushButton_download->setStyleSheet(QString("background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0,"
                                                    "stop:0 rgba(48, 194, 124, 255), stop:%1 rgba(48, 194, 124, 255),"
                                                    "stop:%2 rgba(255, 255, 255, 255), stop:1 rgba(255, 255, 255, 255));")
                                       .arg(p-0.001)
                                       .arg(p));
-    qDebug() << p << ui->pushButton_download->styleSheet();
+    //qDebug() << p << ui->pushButton_download->styleSheet();
 }
 
 void MainWindow::on_pushButton_pageLast_clicked()

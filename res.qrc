@@ -14,5 +14,6 @@
         <file>download.png</file>
         <file>set.png</file>
         <file>fullscreen.png</file>
+        <file>download.svg</file>
     </qresource>
 </RCC>

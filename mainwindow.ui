@@ -622,12 +622,12 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
           </property>
           <property name="icon">
            <iconset resource="res.qrc">
-            <normaloff>:/download.png</normaloff>:/download.png</iconset>
+            <normaloff>:/download.svg</normaloff>:/download.svg</iconset>
           </property>
           <property name="iconSize">
            <size>
-            <width>24</width>
-            <height>24</height>
+            <width>30</width>
+            <height>30</height>
            </size>
           </property>
           <property name="flat">
@@ -682,7 +682,7 @@ QSlider::handle:Horizontal { height: 5px; width:10px; }</string>
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>24</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
