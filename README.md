@@ -1,6 +1,6 @@
 # Qt: QQMusic
-![alt](preview.png)  
-一款基于 Qt 5.10.1 的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。  
+一款基于 Qt 5.10.1 的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。
+![alt](preview.png)    
 左侧的列表没有功能，千万别当真。
 ### 参考
 UI：QQ音乐  
