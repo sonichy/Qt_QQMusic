@@ -38,11 +38,6 @@ MainWindow::MainWindow(QWidget *parent) :
     label_cover = new QLabel;
     label_cover->setWindowFlags(Qt::Dialog);
     ui->textBrowser->zoomIn(2);
-    ui->pushButton_skipb->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
-    ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-    ui->pushButton_skipf->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
-    ui->pushButton_pageLast->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
-    ui->pushButton_pageNext->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
     ui->lineEdit_page->setValidator(new QIntValidator(1,50));
 
     connect(ui->lineEdit_search,SIGNAL(returnPressed()),this,SLOT(initSearch()));
@@ -134,7 +129,7 @@ void MainWindow::on_action_about_triggered()
     dialog->setFixedSize(500,360);
     QVBoxLayout *vbox = new QVBoxLayout;
     QLabel *label = new QLabel;
-    label->setPixmap(QPixmap("logo.png"));
+    label->setPixmap(QPixmap(":/logo.png"));
     label->setAlignment(Qt::AlignCenter);
     vbox->addWidget(label);
     label = new QLabel;
@@ -147,7 +142,7 @@ void MainWindow::on_action_about_triggered()
     label = new QLabel;
     //font.setPointSize(12);
     label->setFont(font);
-    label->setText("         一款基于Qt的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：sonichy.96.lt\n参考:\nUI：QQ音乐\n参考：https://www.cnblogs.com/songwei1/p/7860758.html");
+    label->setText("         一款基于Qt的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：http://github.com/sonichy\n参考:\nUI：QQ音乐\n参考：https://www.cnblogs.com/songwei1/p/7860758.html");
     label->setWordWrap(true);
     label->setAlignment(Qt::AlignTop);
     vbox->addWidget(label);
@@ -251,13 +246,13 @@ void MainWindow::on_pushButton_play_clicked()
 {
     if (player->state() == QMediaPlayer::PlayingState) {
         player->pause();
-        ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+        ui->pushButton_play->setIcon(QIcon::fromTheme("media-playback-start"));
     } else if (player->state() == QMediaPlayer::PausedState) {
         player->play();
-        ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        ui->pushButton_play->setIcon(QIcon::fromTheme("media-playback-pause"));
     } else if (player->state() == QMediaPlayer::StoppedState) {
         player->play();
-        ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+        ui->pushButton_play->setIcon(QIcon::fromTheme("media-playback-pause"));
     }
 }
 

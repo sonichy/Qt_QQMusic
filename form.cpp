@@ -49,7 +49,7 @@ void Form::mouseReleaseEvent(QMouseEvent *event)
 void Form::enterEvent(QEvent *event)
 {
     Q_UNUSED(event);
-    setStyleSheet("background-color: rgba(255,255,255,30);");
+    setStyleSheet("background-color:    rgba(255,255,255,30);");
     ui->pushButton_close->show();
     ui->pushButton_set->show();
 }
