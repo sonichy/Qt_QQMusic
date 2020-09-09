@@ -244,7 +244,7 @@ void MainWindow::playSong(int r, int c)
     ui->textBrowser->setText("");
     desktopLyric->ui->label_lyric->setText("");
     ui->label_lyric->setText("");
-    surl = "https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?g_tk=753738303&songmid=" + songmid;
+    surl = "https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?g_tk=753738303&format=json&songmid=" + songmid;
     qDebug() << "歌词" << surl;
     QNetworkAccessManager *NAM_liric = new QNetworkAccessManager;
     request.setUrl(QUrl(surl));
@@ -553,8 +553,7 @@ void MainWindow::replyLyrics(QNetworkReply *reply)
     lyrics.clear();
     QByteArray BA = reply->readAll();
     QString s = QString(BA);
-    s.replace(QRegularExpression(".*[(](.*)[)]"), "\\1");
-    //qDebug() << s;
+    qDebug() << s;
     QJsonParseError JPE;
     QJsonDocument JD = QJsonDocument::fromJson(s.toLocal8Bit(), &JPE);
     if (JPE.error == QJsonParseError::NoError) {
