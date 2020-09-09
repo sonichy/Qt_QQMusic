@@ -553,7 +553,7 @@ void MainWindow::replyLyrics(QNetworkReply *reply)
     lyrics.clear();
     QByteArray BA = reply->readAll();
     QString s = QString(BA);
-    qDebug() << s;
+    //qDebug() << s;
     QJsonParseError JPE;
     QJsonDocument JD = QJsonDocument::fromJson(s.toLocal8Bit(), &JPE);
     if (JPE.error == QJsonParseError::NoError) {
