@@ -102,6 +102,9 @@
        <property name="text">
         <string/>
        </property>
+       <property name="icon">
+        <iconset theme="window-close"/>
+       </property>
        <property name="flat">
         <bool>true</bool>
        </property>

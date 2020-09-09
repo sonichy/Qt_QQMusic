@@ -22,6 +22,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private:
     Ui::MainWindow *ui;
     QNetworkAccessManager *NAM;
@@ -42,7 +45,7 @@ private:
     void getKey();
     QString readSettings(QString path,QString group, QString key);
     void writeSettings(QString path, QString group, QString key, QString value);
-    void closeEvent(QCloseEvent *event);
+    void toplist();
 
 private slots:
     void on_action_directory_triggered();

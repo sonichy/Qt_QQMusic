@@ -1,13 +1,18 @@
 # Qt: QQMusic
-一款基于 Qt 5.10.1 的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。
+一款基于 Qt 的QQ音乐播放器，音乐版权归腾讯所有。  
+已编译好的 QQMusic 适用于 64位 Linux Qt 5.7.1。  
 ![alt](preview.png)    
-左侧的列表没有功能，千万别当真。
+左侧的列表没有功能。
 ### 参考
 UI：QQ音乐  
-API：  
-[https://github.com/deepins/qq-music-api](https://github.com/deepins/qq-music-api)  
-https://www.cnblogs.com/SoraAoi/p/3311771.html
+API：   
+https://www.cnblogs.com/SoraAoi/p/3311771.html  
+https://blog.csdn.net/qiuxy23/article/details/81266030  
+https://github.com/jsososo/QQMusicApi/blob/85b713d6e0f555feb0da566adb7a3950d67048b2/routes/vkey.js
 
+### V2.4 (2020-09-09)
+* 启动显示榜单
+* 歌曲播放新API
 ### V2.3
 * 歌曲播放新API
 ### V2.2

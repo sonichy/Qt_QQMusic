@@ -10,7 +10,6 @@ Form::Form(QWidget *parent) :
     ui(new Ui::Form)
 {
     ui->setupUi(this);
-    ui->pushButton_close->setIcon(style()->standardIcon(QStyle::SP_DialogCloseButton));
     ui->pushButton_close->hide();
     ui->pushButton_set->hide();
     setAttribute(Qt::WA_TranslucentBackground,true);

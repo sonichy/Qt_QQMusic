@@ -42,21 +42,25 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->lineEdit_search,SIGNAL(returnPressed()),this,SLOT(initSearch()));
     connect(ui->lineEdit_page,SIGNAL(returnPressed()),this,SLOT(search()));
-    ui->tableWidget->setColumnHidden(2,true);
-    ui->tableWidget->setColumnHidden(3,true);
-    ui->tableWidget->setColumnHidden(4,true);
-    ui->tableWidget->setColumnWidth(0,ui->tableWidget->width());
+
+    QStringList header;
+    header << "歌名" << "歌手" << "songmid" << "albummid";
+    ui->tableWidget->setHorizontalHeaderLabels(header);
+    ui->tableWidget->setColumnHidden(2, true);
+    ui->tableWidget->setColumnHidden(3, true);
+    ui->tableWidget->setColumnHidden(4, true);
+    ui->tableWidget->setColumnWidth(0, ui->tableWidget->width());
     connect(ui->tableWidget,SIGNAL(cellClicked(int,int)),this,SLOT(copy(int,int)));
     connect(ui->tableWidget,SIGNAL(cellDoubleClicked(int,int)),this,SLOT(playSong(int,int)));
 
     player = new QMediaPlayer;
     player->setVolume(100);
-    connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(positionChange(qint64)));
-    connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(durationChange(qint64)));
-    connect(player,SIGNAL(stateChanged(QMediaPlayer::State)),this,SLOT(stateChange(QMediaPlayer::State)));
+    connect(player, SIGNAL(positionChanged(qint64)), this, SLOT(positionChange(qint64)));
+    connect(player, SIGNAL(durationChanged(qint64)), this, SLOT(durationChange(qint64)));
+    connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(stateChange(QMediaPlayer::State)));
 
-    connect(ui->slider_progress,SIGNAL(valueChanged(int)),this,SLOT(setSTime(int)));
-    connect(ui->slider_progress,SIGNAL(sliderReleased()),this,SLOT(setMPPosition()));
+    connect(ui->slider_progress, SIGNAL(valueChanged(int)), this, SLOT(setSTime(int)));
+    connect(ui->slider_progress, SIGNAL(sliderReleased()), this, SLOT(setMPPosition()));
 
     QListWidgetItem *LWI;
     LWI = new QListWidgetItem("在线音乐");
@@ -110,6 +114,8 @@ MainWindow::MainWindow(QWidget *parent) :
     if (downloadPath == "") {
         downloadPath = QStandardPaths::standardLocations(QStandardPaths::MusicLocation).first();
     }
+
+    toplist();
 }
 
 MainWindow::~MainWindow()
@@ -126,7 +132,7 @@ void MainWindow::on_action_about_triggered()
 {
     QDialog *dialog = new QDialog(this);
     dialog->setWindowTitle("关于");
-    dialog->setFixedSize(500,360);
+    dialog->setFixedSize(400, 260);
     QVBoxLayout *vbox = new QVBoxLayout;
     QLabel *label = new QLabel;
     label->setPixmap(QPixmap(":/logo.png"));
@@ -136,13 +142,13 @@ void MainWindow::on_action_about_triggered()
     QFont font;
     font.setPointSize(12);
     label->setFont(font);
-    label->setText("QQ音乐 V2.3");
+    label->setText("QQ音乐 V2.4");
     label->setAlignment(Qt::AlignCenter);
     vbox->addWidget(label);
     label = new QLabel;
     //font.setPointSize(12);
     label->setFont(font);
-    label->setText("         一款基于Qt的QQ音乐播放器，拟补QQ音乐没有Linux客户端的不足，音乐版权归腾讯所有。\n作者：黄颖\nE-mail: sonichy@163.com\n主页：http://github.com/sonichy\n参考:\nUI：QQ音乐\n参考：https://www.cnblogs.com/songwei1/p/7860758.html");
+    label->setText("         一款基于Qt的QQ音乐播放器，音乐版权归腾讯所有。\n作者：海天鹰\nE-mail: sonichy@163.com\n主页：http://github.com/sonichy");
     label->setWordWrap(true);
     label->setAlignment(Qt::AlignTop);
     vbox->addWidget(label);
@@ -189,7 +195,6 @@ void MainWindow::search()
             ui->tableWidget->setItem(i,1,new QTableWidgetItem(list[i].toObject().value("singer").toArray()[0].toObject().value("name").toString()));
             ui->tableWidget->setItem(i,2,new QTableWidgetItem(list[i].toObject().value("songmid").toString()));
             ui->tableWidget->setItem(i,3,new QTableWidgetItem(list[i].toObject().value("albummid").toString()));
-            ui->tableWidget->setItem(i,4,new QTableWidgetItem("http://music.qq.com/miniportal/static/lyric/" + QString::number(list[i].toObject().value("songid").toInt()%100)+ "/" + QString::number(list[i].toObject().value("songid").toInt()) + ".xml"));
         }
         ui->tableWidget->resizeColumnsToContents();
         ui->tableWidget->scrollToTop();
@@ -206,7 +211,9 @@ void MainWindow::playSong(int r, int c)
     Q_UNUSED(c);
     ui->pushButton_download->setStyleSheet("");
     ui->label_SongSinger->setText(ui->tableWidget->item(r,0)->text() + " - " + ui->tableWidget->item(r,1)->text());
-    QString surl = "https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg?g_tk=1160855065&&loginUin=247990761&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8¬ice=0&platform=yqq&needNewCode=0&cid=205361747&&uin=247990761&songmid=" + ui->tableWidget->item(r,2)->text() + "&filename=C400" + ui->tableWidget->item(r,2)->text() + ".m4a&guid=" + guid;
+    //https://github.com/jsososo/QQMusicApi/blob/85b713d6e0f555feb0da566adb7a3950d67048b2/routes/vkey.js
+    QString songmid = ui->tableWidget->item(r,2)->text();
+    QString surl = "https://u.y.qq.com/cgi-bin/musicu.fcg?-=getplaysongvkey2682247447678878&g_tk=5381&loginUin=956581739&hostUin=0&format=json&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq.json&needNewCode=0&data={\"req_0\":{\"module\":\"vkey.GetVkeyServer\",\"method\":\"CgiGetVkey\",\"param\":{\"guid\":\"2796982635\",\"songmid\":[\"" + songmid + "\"],\"songtype\":[0],\"uin\":\"956581739\",\"loginflag\":1,\"platform\":\"20\"}},\"comm\":{\"uin\":956581739,\"format\":\"json\",\"ct\":24,\"cv\":0}}";
     qDebug() << surl;
     QNetworkRequest request;
     request.setUrl(QUrl(surl));
@@ -216,30 +223,34 @@ void MainWindow::playSong(int r, int c)
     loop.exec();
     QByteArray BA = reply->readAll();
     //qDebug() <<  BA;
-    QJsonDocument json = QJsonDocument::fromJson(BA);
-    QString vkey = json.object().value("data").toObject().value("items").toArray()[0].toObject().value("vkey").toString();
-    qDebug() << vkey;
-    surl = "http://dl.stream.qqmusic.qq.com/C400" + ui->tableWidget->item(r,2)->text() + ".m4a?vkey=" + vkey + "&fromtag=30&guid=" + guid;
+    QJsonDocument JD = QJsonDocument::fromJson(BA);
+    //QString vkey = JD.object().value("req_0").toObject().value("data").toObject().value("midurlinfo").toArray()[0].toObject().value("vkey").toString();
+    //qDebug() << "vkey" << vkey;
+    QString purl = JD.object().value("req_0").toObject().value("data").toObject().value("midurlinfo").toArray()[0].toObject().value("purl").toString();
+    surl = "http://ws.stream.qqmusic.qq.com/" + purl;
     qDebug() << surl;
     player->setMedia(QUrl(surl));
     player->play();
     ui->pushButton_play->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
     ui->slider_progress->setMaximum(player->duration());
     // 专辑封面
-    QNetworkAccessManager *NAMAlbumCover = new QNetworkAccessManager;
+    QNetworkAccessManager *NAM_albumCover = new QNetworkAccessManager;
     QString albumID = ui->tableWidget->item(r,3)->text();
     QString album_cover = QString("https://y.gtimg.cn/music/photo_new/T002R500x500M000%1.jpg").arg(albumID);
     //QString albumpic = QString("http://imgcache.qq.com/music/photo/album/{albumid%100}/albumpic_{albumid}_0.jpg");
-    NAMAlbumCover->get(QNetworkRequest(album_cover));
-    connect(NAMAlbumCover, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAlbumPixmap(QNetworkReply*)));
+    NAM_albumCover->get(QNetworkRequest(album_cover));
+    connect(NAM_albumCover, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyAlbumPixmap(QNetworkReply*)));
     // 歌词
     ui->textBrowser->setText("");
     desktopLyric->ui->label_lyric->setText("");
     ui->label_lyric->setText("");
-    qDebug() << "歌词" << ui->tableWidget->item(r,4)->text();
-    QNetworkAccessManager *NAMLirics = new QNetworkAccessManager;
-    NAMLirics->get(QNetworkRequest(ui->tableWidget->item(r,4)->text()));
-    connect(NAMLirics, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyLyrics(QNetworkReply*)));
+    surl = "https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?g_tk=753738303&songmid=" + songmid;
+    qDebug() << "歌词" << surl;
+    QNetworkAccessManager *NAM_liric = new QNetworkAccessManager;
+    request.setUrl(QUrl(surl));
+    request.setRawHeader("Referer", "https://y.qq.com/portal/1player.html");
+    NAM_liric->get(request);
+    connect(NAM_liric, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyLyrics(QNetworkReply*)));
 }
 
 void MainWindow::on_pushButton_play_clicked()
@@ -540,14 +551,19 @@ void MainWindow::replyAlbumPixmap(QNetworkReply *reply)
 void MainWindow::replyLyrics(QNetworkReply *reply)
 {
     lyrics.clear();
-    QByteArray BAReply = reply->readAll();
-    if(BAReply.indexOf("GB2312")==-1){
-        ui->textBrowser->setText(BAReply);
-    }else{
-        QString lrc = QTextCodec::codecForName("GBK")->toUnicode(BAReply);
-        lrc = lrc.mid(lrc.indexOf("<![CDATA[")+9, lrc.indexOf("]]>")-lrc.indexOf("<![CDATA[")-9).replace("&apos;","'");
-        QStringList line = lrc.split("\n");
-        for(int i=0;i<line.size();i++){
+    QByteArray BA = reply->readAll();
+    QString s = QString(BA);
+    s.replace(QRegularExpression(".*[(](.*)[)]"), "\\1");
+    //qDebug() << s;
+    QJsonParseError JPE;
+    QJsonDocument JD = QJsonDocument::fromJson(s.toLocal8Bit(), &JPE);
+    if (JPE.error == QJsonParseError::NoError) {
+        QString lyric = JD.object().value("lyric").toString();
+        BA = QByteArray::fromBase64(lyric.toLocal8Bit());
+        s = QString(BA);
+        //qDebug() << s;
+        QStringList line = s.split("\n");
+        for (int i=0; i<line.size(); i++){
             if(line.at(i).contains("]") && !line.at(i).contains("ti:") && !line.at(i).contains("ar:") && !line.at(i).contains("al:") && !line.at(i).contains("by:") && !line.at(i).contains("offset:")){
                 QStringList strlist = line.at(i).split("]");
                 Lyric lyric;
@@ -562,7 +578,8 @@ void MainWindow::replyLyrics(QNetworkReply *reply)
         QTextCursor cursor = ui->textBrowser->textCursor();
         cursor.setPosition(0,QTextCursor::MoveAnchor);
         ui->textBrowser->setTextCursor(cursor);
-        //cursor.movePosition(QTextCursor::Start,QTextCursor::MoveAnchor);
+    } else {
+        ui->textBrowser->setText(JPE.errorString());
     }
 }
 
@@ -578,7 +595,7 @@ void MainWindow::chooseDownloadPath()
 void MainWindow::on_pushButton_cover_clicked()
 {
     label_cover->setWindowTitle(ui->label_SongSinger->text());
-    label_cover->resize(pixmap_cover.size());
+    label_cover->setFixedSize(pixmap_cover.size());
     label_cover->setPixmap(pixmap_cover);
     label_cover->move((QApplication::desktop()->width()-label_cover->width())/2,(QApplication::desktop()->height()-label_cover->height())/2);
     label_cover->show();
@@ -625,4 +642,30 @@ void MainWindow::exitFullscreen()
         ui->tableWidget->show();
         ui->pushButton_cover->show();
     }
+}
+
+void MainWindow::toplist()
+{
+    QString surl = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg?uin=0&notice=0&platform=h5&needNewCode=1&tpl=3&page=detail&type=top&topid=27";
+    QUrl url = QString(surl);
+    QNetworkRequest request(url);
+    QNetworkReply *reply = NAM->get(request);
+    QEventLoop loop;
+    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    loop.exec();
+    QByteArray BA = reply->readAll();
+    QJsonDocument JD = QJsonDocument::fromJson(BA);
+    QJsonArray songlist = JD.object().value("songlist").toArray();
+    ui->tableWidget->setRowCount(0);
+    for (int i=0; i<songlist.size(); i++) {
+        QJsonObject data = songlist[i].toObject().value("data").toObject();
+        ui->tableWidget->insertRow(i);
+        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(data.value("songname").toString()));
+        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(data.value("singer").toArray()[0].toObject().value("name").toString()));
+        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(data.value("songmid").toString()));
+        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(data.value("albummid").toString()));
+        ui->tableWidget->setItem(i, 4, new QTableWidgetItem("http://music.qq.com/miniportal/static/lyric/" + QString::number(data.value("songid").toInt()%100)+ "/" + QString::number(data.value("songid").toInt()) + ".xml"));
+    }
+    ui->tableWidget->resizeColumnsToContents();
+    ui->tableWidget->scrollToTop();
 }
